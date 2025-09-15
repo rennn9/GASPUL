@@ -1,0 +1,36 @@
+name: gaspul
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.5.1
+  cupertino_icons: ^1.0.8
+  flutter_native_splash: ^2.4.6
+  google_fonts: ^6.2.1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo_gaspul.png
+    - assets/images/Logo KUA.png
+    - assets/images/Logo Layanan Internal.png
+    - assets/images/Logo Layanan Kabupaten.png
+    - assets/images/Logo Layanan Pendidikan.png
+    - assets/images/Logo Pelayanan Publik.png
+    - assets/images/Logo Rubrik.png
+    - assets/images/logo_gaspul.png
+    - assets/images/Geometric Pattern.png

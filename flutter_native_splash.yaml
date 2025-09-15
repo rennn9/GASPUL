@@ -1,0 +1,10 @@
+flutter_native_splash:
+  color: "#FFFFFF"            # Warna background splash (ubah sesuai desain kamu)
+  image: assets/images/logo_gaspul_splashscreen.png   # Logo splash
+  android_12:
+    image: assets/images/logo_gaspul_splashscreen.png
+    icon_background_color: "#FFFFFF"  # Background logo Android 12+
+    color: "#FFFFFF"
+  android: true
+  ios: true
+  web: false
