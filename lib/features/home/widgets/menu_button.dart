@@ -11,7 +11,7 @@ class MenuButton extends ConsumerWidget {
 
     return Material(
       borderRadius: BorderRadius.circular(12),
-      elevation: 2,
+      elevation: 4, // 🔹 lebih mirip shadow di Header
       color: Colors.white,
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -19,8 +19,8 @@ class MenuButton extends ConsumerWidget {
           final isOpen = ref.read(accessibilityMenuProvider);
           ref.read(accessibilityMenuProvider.notifier).state = !isOpen;
         },
-        child: Padding(
-          padding: const EdgeInsets.all(6),
+        child: const Padding(
+          padding: EdgeInsets.all(6),
           child: Icon(
             Icons.menu,
             color: secondaryColor,

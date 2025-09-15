@@ -6,9 +6,8 @@ import 'widgets/header.dart';
 import 'widgets/glass_container.dart';
 import 'widgets/menu_card.dart';
 import 'widgets/accessibility_menu.dart';
-
-// 🔹 Provider untuk kontrol popup menu
-final menuOpenProvider = StateProvider<bool>((ref) => false);
+import 'service_page.dart';
+import 'home_providers.dart'; // 🔹 akses accessibilityMenuProvider
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -18,7 +17,7 @@ class HomeScreen extends ConsumerWidget {
     const primaryColor = Color(0xFF017787);
     const secondaryColor = Color(0xFF05A4AD);
 
-    final isMenuOpen = ref.watch(menuOpenProvider);
+    final isMenuOpen = ref.watch(accessibilityMenuProvider);
 
     return Scaffold(
       backgroundColor: primaryColor,
@@ -27,11 +26,7 @@ class HomeScreen extends ConsumerWidget {
           Column(
             children: [
               // 🔹 Header
-              Header(
-                onMenuPressed: () {
-                  ref.read(menuOpenProvider.notifier).state = true;
-                },
-              ),
+              const Header(),
 
               // 🔹 Grid dengan glass container belakang
               Expanded(
@@ -51,16 +46,42 @@ class HomeScreen extends ConsumerWidget {
                           MenuCard(
                             title: "Layanan Publik",
                             subtitle: "Pelayanan untuk Masyarakat",
-                            imagePath:
-                                "assets/images/Logo Pelayanan Publik.png",
+                            imagePath: "assets/images/Logo Pelayanan Publik.png",
                             secondaryColor: secondaryColor,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ServicePage(
+                                    title: "Layanan Publik",
+                                    subtitle: "Pelayanan untuk Masyarakat",
+                                    imagePath:
+                                        "assets/images/Logo Pelayanan Publik.png",
+                                    items: [],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           MenuCard(
                             title: "Layanan Internal",
                             subtitle: "Sistem Internal Organisasi",
-                            imagePath:
-                                "assets/images/Logo Layanan Internal.png",
+                            imagePath: "assets/images/Logo Layanan Internal.png",
                             secondaryColor: secondaryColor,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ServicePage(
+                                    title: "Layanan Internal",
+                                    subtitle: "Sistem Internal Organisasi",
+                                    imagePath:
+                                        "assets/images/Logo Layanan Internal.png",
+                                    items: [],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           MenuCard(
                             title: "Layanan Kabupaten",
@@ -68,6 +89,20 @@ class HomeScreen extends ConsumerWidget {
                             imagePath:
                                 "assets/images/Logo Layanan Kabupaten.png",
                             secondaryColor: secondaryColor,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ServicePage(
+                                    title: "Layanan Kabupaten",
+                                    subtitle: "Layanan Tingkat Daerah",
+                                    imagePath:
+                                        "assets/images/Logo Layanan Kabupaten.png",
+                                    items: [],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           MenuCard(
                             title: "Layanan Pendidikan",
@@ -75,18 +110,58 @@ class HomeScreen extends ConsumerWidget {
                             imagePath:
                                 "assets/images/Logo Layanan Pendidikan.png",
                             secondaryColor: secondaryColor,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ServicePage(
+                                    title: "Layanan Pendidikan",
+                                    subtitle: "Layanan Pendidikan",
+                                    imagePath:
+                                        "assets/images/Logo Layanan Pendidikan.png",
+                                    items: [],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           MenuCard(
                             title: "Layanan KUA",
                             subtitle: "Kantor Urusan Agama",
                             imagePath: "assets/images/Logo KUA.png",
                             secondaryColor: secondaryColor,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ServicePage(
+                                    title: "Layanan KUA",
+                                    subtitle: "Kantor Urusan Agama",
+                                    imagePath: "assets/images/Logo KUA.png",
+                                    items: [],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           MenuCard(
                             title: "Rubrik",
                             subtitle: "Informasi dan Berita",
                             imagePath: "assets/images/Logo Rubrik.png",
                             secondaryColor: secondaryColor,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ServicePage(
+                                    title: "Rubrik",
+                                    subtitle: "Informasi dan Berita",
+                                    imagePath: "assets/images/Logo Rubrik.png",
+                                    items: [],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -101,7 +176,7 @@ class HomeScreen extends ConsumerWidget {
           if (isMenuOpen)
             AccessibilityMenu(
               onClose: () {
-                ref.read(menuOpenProvider.notifier).state = false;
+                ref.read(accessibilityMenuProvider.notifier).state = false;
               },
             ),
         ],

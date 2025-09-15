@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'menu_button.dart'; // 🔹 Import MenuButton
 
 class Header extends StatelessWidget {
-  final VoidCallback onMenuPressed; // 🔹 Tambahkan callback
-
-  const Header({super.key, required this.onMenuPressed});
+  const Header({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const secondaryColor = Color(0xFF05A4AD);
-
     return Stack(
       children: [
         Container(
@@ -25,27 +22,7 @@ class Header extends StatelessWidget {
         Positioned(
           top: 40,
           right: 20,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: onMenuPressed, // 🔹 pakai callback
-              icon: const Icon(
-                Icons.menu,
-                color: secondaryColor,
-                size: 28,
-              ),
-            ),
-          ),
+          child: const MenuButton(), // 🔹 Ganti dengan MenuButton
         ),
         Positioned.fill(
           child: Column(
