@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gaspul/core/theme/theme.dart'; // 🔹 import AppColors
 import 'widgets/menu_button.dart';
 import 'widgets/accessibility_menu.dart';
 import 'home_providers.dart';
@@ -27,15 +28,15 @@ class ServicePage extends ConsumerWidget {
         children: [
           Column(
             children: [
-              // 🔹 Header dengan warna primary
+              // 🔹 Header pakai warna primary
               Container(
                 height: 200,
                 decoration: const BoxDecoration(
-                  color: Color(0xFF05A4AD), // ✅ primary color
+                  color: AppColors.primary, // ✅ dari theme.dart
                 ),
                 child: Stack(
                   children: [
-                    // 🔹 Tombol kembali di kiri atas
+                    // 🔹 Tombol kembali
                     Positioned(
                       top: 40,
                       left: 20,
@@ -50,17 +51,17 @@ class ServicePage extends ConsumerWidget {
                           ),
                           child: const Icon(
                             Icons.arrow_back,
-                            color: Color(0xFF05A4AD), // ✅ primary color
+                            color: AppColors.primary, // ✅ konsisten
                           ),
                         ),
                       ),
                     ),
 
-                    // 🔹 Tombol Menu di kanan atas
-                    Positioned(
+                    // 🔹 Tombol Menu
+                    const Positioned(
                       top: 40,
                       right: 20,
-                      child: const MenuButton(),
+                      child: MenuButton(),
                     ),
 
                     // 🔹 Isi header (logo + title + subtitle)
@@ -82,7 +83,7 @@ class ServicePage extends ConsumerWidget {
                             subtitle,
                             style: const TextStyle(
                               fontSize: 14,
-                              color: Colors.white70,
+                              color: AppColors.subtitle,
                             ),
                           ),
                         ],

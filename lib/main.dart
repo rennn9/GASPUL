@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/theme/theme.dart';
 import 'features/home/home_screen.dart';
 
 void main() {
   runApp(
-    const ProviderScope(child: MyApp()),
+    const ProviderScope( // 🔹 Riverpod wajib pakai ini
+      child: MyApp(),
+    ),
   );
 }
 
@@ -14,9 +17,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Gaspul App',
-      theme: ThemeData(primarySwatch: Colors.teal),
-      home: const HomeScreen(), // <- langsung masuk ke halaman utama
+      title: 'Gaspul',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme, // 🔹 pakai theme dari theme.dart
+      home: const HomeScreen(),
     );
   }
 }

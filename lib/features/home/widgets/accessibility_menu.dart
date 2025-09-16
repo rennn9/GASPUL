@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaspul/core/theme/theme.dart'; // 🔹 import AppColors
 
 class AccessibilityMenu extends StatelessWidget {
   final VoidCallback onClose;
@@ -7,10 +8,10 @@ class AccessibilityMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fill( // 🔹 agar bisa mendeteksi tap di seluruh layar
+    return Positioned.fill( // 🔹 full screen overlay
       child: Stack(
         children: [
-          // 🔹 Background transparan yang bisa ditap untuk close
+          // 🔹 Background transparan bisa tap untuk close
           GestureDetector(
             onTap: onClose,
             child: Container(
@@ -24,7 +25,7 @@ class AccessibilityMenu extends StatelessWidget {
             right: 20,
             child: Material(
               color: Colors.transparent,
-              elevation: 100, // biarin sesuai selera kamu
+              elevation: 100,
               borderRadius: BorderRadius.circular(16),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -43,7 +44,7 @@ class AccessibilityMenu extends StatelessWidget {
                       icon: const Icon(
                         Icons.close,
                         size: 28,
-                        color: Color(0xFF05A4AD),
+                        color: AppColors.primary, // ✅ dari theme
                       ),
                       onPressed: onClose,
                     ),
@@ -114,7 +115,7 @@ class _MenuButton extends StatelessWidget {
         width: 100,
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF05A4AD),
+          color: AppColors.primary, // ✅ konsisten theme
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gaspul/core/theme/theme.dart'; // 🔹 import AppColors
 import '../home_providers.dart';
 
 class MenuButton extends ConsumerWidget {
@@ -7,11 +8,9 @@ class MenuButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const secondaryColor = Color(0xFF05A4AD);
-
     return Material(
       borderRadius: BorderRadius.circular(12),
-      elevation: 4, // 🔹 lebih mirip shadow di Header
+      elevation: 4, // 🔹 shadow agar mirip di Header
       color: Colors.white,
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -23,7 +22,7 @@ class MenuButton extends ConsumerWidget {
           padding: EdgeInsets.all(6),
           child: Icon(
             Icons.menu,
-            color: secondaryColor,
+            color: AppColors.secondary, // ✅ pakai warna dari theme.dart
             size: 28,
           ),
         ),

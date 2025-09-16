@@ -8,19 +8,17 @@ import 'widgets/menu_card.dart';
 import 'widgets/accessibility_menu.dart';
 import 'service_page.dart';
 import 'home_providers.dart'; // 🔹 akses accessibilityMenuProvider
+import 'package:gaspul/core/theme/theme.dart'; // ✅ impor AppColors
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const primaryColor = Color(0xFF017787);
-    const secondaryColor = Color(0xFF05A4AD);
-
     final isMenuOpen = ref.watch(accessibilityMenuProvider);
 
     return Scaffold(
-      backgroundColor: primaryColor,
+      backgroundColor: AppColors.primary, // ✅ ganti dari hardcode
       body: Stack(
         children: [
           Column(
@@ -47,7 +45,6 @@ class HomeScreen extends ConsumerWidget {
                             title: "Layanan Publik",
                             subtitle: "Pelayanan untuk Masyarakat",
                             imagePath: "assets/images/Logo Pelayanan Publik.png",
-                            secondaryColor: secondaryColor,
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -67,7 +64,6 @@ class HomeScreen extends ConsumerWidget {
                             title: "Layanan Internal",
                             subtitle: "Sistem Internal Organisasi",
                             imagePath: "assets/images/Logo Layanan Internal.png",
-                            secondaryColor: secondaryColor,
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -88,7 +84,6 @@ class HomeScreen extends ConsumerWidget {
                             subtitle: "Layanan Tingkat Daerah",
                             imagePath:
                                 "assets/images/Logo Layanan Kabupaten.png",
-                            secondaryColor: secondaryColor,
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -109,7 +104,6 @@ class HomeScreen extends ConsumerWidget {
                             subtitle: "Layanan Pendidikan",
                             imagePath:
                                 "assets/images/Logo Layanan Pendidikan.png",
-                            secondaryColor: secondaryColor,
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -129,7 +123,6 @@ class HomeScreen extends ConsumerWidget {
                             title: "Layanan KUA",
                             subtitle: "Kantor Urusan Agama",
                             imagePath: "assets/images/Logo KUA.png",
-                            secondaryColor: secondaryColor,
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -148,7 +141,6 @@ class HomeScreen extends ConsumerWidget {
                             title: "Rubrik",
                             subtitle: "Informasi dan Berita",
                             imagePath: "assets/images/Logo Rubrik.png",
-                            secondaryColor: secondaryColor,
                             onTap: () {
                               Navigator.push(
                                 context,

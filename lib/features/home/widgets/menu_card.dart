@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:gaspul/core/theme/theme.dart'; // 🔹 pakai AppColors
 
 class MenuCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String imagePath;
-  final Color secondaryColor;
   final VoidCallback? onTap; // 🔹 Callback untuk navigasi
 
   const MenuCard({
@@ -13,23 +12,22 @@ class MenuCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.imagePath,
-    required this.secondaryColor,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // 🔹 Biar bisa diklik
+      onTap: onTap, // 🔹 biar bisa diklik
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 4,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -42,23 +40,22 @@ class MenuCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 title,
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: secondaryColor,
-                  height: 1.2,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.secondary, // ✅ pakai warna theme
+                      height: 1.2,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 6),
               Text(
-                subtitle,
-                style: GoogleFonts.poppins(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF555555),
-                  height: 1.2,
-                ),
+              subtitle,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontSize: 9, // ✅ tambahin ini
+                    fontWeight: FontWeight.w400,
+                    color: Colors.grey[700],
+                    height: 1.2,
+                  ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
