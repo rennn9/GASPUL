@@ -8,6 +8,11 @@ class MenuButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 🔹 pilih warna ikon berdasarkan tema
+    final iconColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.black       // High Contrast
+        : AppColors.secondary; // Normal
+
     return Material(
       borderRadius: BorderRadius.circular(12),
       elevation: 4, // 🔹 shadow agar mirip di Header
@@ -18,11 +23,11 @@ class MenuButton extends ConsumerWidget {
           final isOpen = ref.read(accessibilityMenuProvider);
           ref.read(accessibilityMenuProvider.notifier).state = !isOpen;
         },
-        child: const Padding(
-          padding: EdgeInsets.all(6),
+        child: Padding(
+          padding: const EdgeInsets.all(6),
           child: Icon(
             Icons.menu,
-            color: AppColors.secondary, // ✅ pakai warna dari theme.dart
+            color: iconColor,
             size: 28,
           ),
         ),

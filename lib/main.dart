@@ -1,25 +1,31 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/theme/theme.dart';
-import 'features/home/home_screen.dart';
+import 'package:gaspul/core/theme/theme.dart';
+import 'package:gaspul/features/home/home_screen.dart';
+import 'package:gaspul/features/home/widgets/accessibility_provider.dart';
 
 void main() {
   runApp(
-    const ProviderScope( // 🔹 Riverpod wajib pakai ini
+    const ProviderScope(
       child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accessibility = ref.watch(accessibilityProvider);
+
     return MaterialApp(
       title: 'Gaspul',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme, // 🔹 pakai theme dari theme.dart
+      theme: accessibility.highContrast
+          ? AppTheme.highContrastTheme
+          : AppTheme.lightTheme,
       home: const HomeScreen(),
     );
   }

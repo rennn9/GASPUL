@@ -1,0 +1,93 @@
+final layananData = {
+  "publik": {
+    "title": "Layanan Publik",
+    "subtitle": "Pelayanan untuk Masyarakat",
+    "image": "assets/images/Logo Pelayanan Publik.png",
+    "layout": "list", // ✅ pakai grid
+    "items": [
+      {
+        "title": "Bagian Tata Usaha",
+        "icon": "assets/images/Logo Bagian Tata Usaha.png",
+      },
+      {
+        "title": "Bidang Penyelenggaraan Haji dan Umrah",
+        "icon": "assets/images/Logo Bidang Penyelenggaraan Haji dan Umrah.png",
+      },
+      {
+        "title": "Bidang Pendidikan Madrasah",
+        "icon": "assets/images/Logo Bidang Pendidikan Madrasah.png",
+      },
+      {
+        "title": "Bidang Bimbingan Masyarakat Islam",
+        "icon": "assets/images/Logo Bidang Bimbingan Masyarakat Islam.png",
+      },
+      {
+        "title": "Bimas Kristen",
+        "icon": "assets/images/Logo Bimas Kristen.png",
+      },
+      {
+        "title": "Bimas Katolik",
+        "icon": "assets/images/Logo Bimas Katolik.png",
+      },
+      {
+        "title": "Bimas Hindu",
+        "icon": "assets/images/Logo Bimas Hindu.png",
+      },
+      {
+        "title": "Bimas Buddha",
+        "icon": "assets/images/Logo Bimas Buddha.png",
+      },
+    ],
+  },
+  "internal": {
+    "title": "Layanan Internal",
+    "subtitle": "Sistem Internal Organisasi",
+    "image": "assets/images/Logo Layanan Internal.png",
+    "layout": "grid", // ✅ pakai list vertical
+    "items": [
+      {"title": "Absensi", "icon": "assets/images/Logo Absensi.png"},
+      {"title": "Bengkel IT", "icon": "assets/images/logo Bengkel IT.png"},
+    ],
+  },
+  "kabupaten": {
+    "title": "Layanan Kabupaten",
+    "subtitle": "Layanan Tingkat Daerah",
+    "image": "assets/images/Logo Layanan Kabupaten.png",
+    "layout": "grid",
+    "items": [
+      {"title": "Majene", "icon": "assets/images/Logo Kabupaten Majene.png"},
+      {"title": "Mamasa", "icon": "assets/images/Logo Kabupaten Mamasa.png"},
+      {"title": "Mamuju", "icon": "assets/images/Logo Kabupaten Mamuju.png"},
+      {"title": "Mamuju Tengah", "icon": "assets/images/Logo Kabupaten Mamuju Tengah.png"},
+      {"title": "Pasangkayu", "icon": "assets/images/Logo Kabupaten Pasangkayu.png"},
+      {"title": "Polewali Mandar", "icon": "assets/images/Logo Kabupaten Polewali Mandar.png"},
+    ],
+  },
+  "pendidikan": {
+    "title": "Layanan Pendidikan",
+    "subtitle": "Layanan Pendidikan",
+    "image": "assets/images/Logo Layanan Pendidikan.png",
+    "layout": "grid",
+    "items": [
+      {"title": "Guru", "icon": "assets/images/Logo Guru.png"},
+    ],
+  },
+  "kua": {
+    "title": "Layanan KUA",
+    "subtitle": "Kantor Urusan Agama",
+    "image": "assets/images/Logo KUA.png",
+    "layout": "grid",
+    "items": [
+      {"title": "Pencatatan Nikah", "icon": "assets/images/Logo Pencatatan Nikah.png"},
+    ],
+  },
+  "rubrik": {
+    "title": "Rubrik",
+    "subtitle": "Informasi dan Berita",
+    "image": "assets/images/Logo Rubrik.png",
+    "layout": "grid",
+    "items": [
+      {"title": "Podcast", "icon": "assets/images/Logo Podcast.png"},
+    ],
+  },
+};

@@ -14,17 +14,24 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_native_splash: ^2.4.6
   google_fonts: ^6.2.1
-
+  flutter_tts: ^3.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: 0.14.4
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/app_icon_gaspul.png"
 
 flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/app_icon_gaspul.png
     - assets/images/logo_gaspul.png
     - assets/images/Logo KUA.png
     - assets/images/Logo Layanan Internal.png
@@ -32,5 +39,23 @@ flutter:
     - assets/images/Logo Layanan Pendidikan.png
     - assets/images/Logo Pelayanan Publik.png
     - assets/images/Logo Rubrik.png
-    - assets/images/logo_gaspul.png
     - assets/images/Geometric Pattern.png
+    - assets/images/Logo Bagian Tata Usaha.png
+    - assets/images/Logo Bidang Penyelenggaraan Haji dan Umrah.png
+    - assets/images/Logo Bidang Pendidikan Madrasah.png
+    - assets/images/Logo Bidang Bimbingan Masyarakat Islam.png
+    - assets/images/Logo Bimas Kristen.png
+    - assets/images/Logo Bimas Katolik.png
+    - assets/images/Logo Bimas Hindu.png
+    - assets/images/Logo Bimas Buddha.png
+    - assets/images/Logo Absensi.png
+    - assets/images/logo Bengkel IT.png
+    - assets/images/Logo Kabupaten Majene.png
+    - assets/images/Logo Kabupaten Mamasa.png
+    - assets/images/Logo Kabupaten Mamuju.png
+    - assets/images/Logo Kabupaten Mamuju Tengah.png
+    - assets/images/Logo Kabupaten Pasangkayu.png
+    - assets/images/Logo Kabupaten Polewali Mandar.png
+    - assets/images/Logo Guru.png
+    - assets/images/Logo Pencatatan Nikah.png
+    - assets/images/Logo Podcast.png

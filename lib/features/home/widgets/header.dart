@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:gaspul/core/theme/theme.dart'; // 🔹 pakai AppColors
 import 'menu_button.dart'; // 🔹 Import MenuButton
 
 class Header extends StatelessWidget {
-  const Header({super.key});
+  final double topPadding;     // 🔹 padding atas untuk seluruh isi header
+  final double textTopMargin;  // 🔹 jarak teks dari logo
+
+  const Header({
+    super.key,
+    this.topPadding = 45,       // default padding atas
+    this.textTopMargin = 10,    // default jarak teks dari logo
+  });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme; // 🔹 ambil warna dari theme
+
     return Stack(
       children: [
         Container(
@@ -19,26 +27,28 @@ class Header extends StatelessWidget {
             ),
           ),
         ),
-        const Positioned(
-          top: 40,
+        Positioned(
+          top: topPadding,
           right: 20,
-          child: MenuButton(), // 🔹 tetap pakai MenuButton
+          child: const MenuButton(), // 🔹 tombol menu mengikuti top padding
         ),
-        Positioned.fill(
+        Positioned(
+          top: topPadding,
+          left: 0,
+          right: 0,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
                 "assets/images/logo_gaspul.png",
-                height: 80,
+                height: 120,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: textTopMargin),
               Text(
                 "Gerakan Aktif Sistimatis Pelayanan Unggul",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white, // ✅ biar kontras dengan background
+                      fontWeight: FontWeight.w900,
+                      color: colorScheme.onPrimary,
                     ),
                 textAlign: TextAlign.center,
               ),
