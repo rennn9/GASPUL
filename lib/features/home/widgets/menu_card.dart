@@ -31,7 +31,7 @@ class MenuCard extends StatelessWidget {
           splashColor: colors.primary.withOpacity(0.2),
           highlightColor: colors.primary.withOpacity(0.1),
           child: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(6.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -40,25 +40,21 @@ class MenuCard extends StatelessWidget {
                 Text(
                   title,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                        color: colors.primary,
-                        height: 1.2,
-                      ),
+                    fontWeight: FontWeight.w900,
+                    color: colors.primary,
+                    height: 1.2,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 6),
                 Text(
                   subtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w900,
-                        color: colors.onSurface.withOpacity(0.8),
-                        height: 1.2,
-                      ),
+                    fontWeight: FontWeight.w900, // font super tebal
+                    color: colors.onSurface.withOpacity(0.8,), // warna teks dari colorScheme dengan opacity 0.8
+                    height: 1.2, // line-height, jarak antarbaris
+                  ),
                   textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
                 ),
               ],
             ),

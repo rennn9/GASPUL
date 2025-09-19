@@ -15,6 +15,8 @@ dependencies:
   flutter_native_splash: ^2.4.6
   google_fonts: ^6.2.1
   flutter_tts: ^3.7.0
+  webview_flutter: 4.13.0
+
 
 dev_dependencies:
   flutter_test:
@@ -22,7 +24,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_launcher_icons: 0.14.4
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: false
   image_path: "assets/images/app_icon_gaspul.png"
@@ -59,3 +61,11 @@ flutter:
     - assets/images/Logo Guru.png
     - assets/images/Logo Pencatatan Nikah.png
     - assets/images/Logo Podcast.png
+    - assets/images/Logo Cuti.png
+    - assets/images/Logo RKB.png
+    - assets/images/Logo Gembira.png
+    - assets/images/Logo SIKEMBAR.png
+    - assets/images/Logo_Kementrian_Agama.png
+    - assets/images/Pattern Down.png
+    - assets/images/Pattern Up.png
+    - assets/images/Logo Sihabba.png

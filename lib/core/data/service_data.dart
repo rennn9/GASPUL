@@ -3,50 +3,31 @@ final layananData = {
     "title": "Layanan Publik",
     "subtitle": "Pelayanan untuk Masyarakat",
     "image": "assets/images/Logo Pelayanan Publik.png",
-    "layout": "list", // ✅ pakai grid
+    "layout": "list",
     "items": [
-      {
-        "title": "Bagian Tata Usaha",
-        "icon": "assets/images/Logo Bagian Tata Usaha.png",
-      },
-      {
-        "title": "Bidang Penyelenggaraan Haji dan Umrah",
-        "icon": "assets/images/Logo Bidang Penyelenggaraan Haji dan Umrah.png",
-      },
-      {
-        "title": "Bidang Pendidikan Madrasah",
-        "icon": "assets/images/Logo Bidang Pendidikan Madrasah.png",
-      },
-      {
-        "title": "Bidang Bimbingan Masyarakat Islam",
-        "icon": "assets/images/Logo Bidang Bimbingan Masyarakat Islam.png",
-      },
-      {
-        "title": "Bimas Kristen",
-        "icon": "assets/images/Logo Bimas Kristen.png",
-      },
-      {
-        "title": "Bimas Katolik",
-        "icon": "assets/images/Logo Bimas Katolik.png",
-      },
-      {
-        "title": "Bimas Hindu",
-        "icon": "assets/images/Logo Bimas Hindu.png",
-      },
-      {
-        "title": "Bimas Buddha",
-        "icon": "assets/images/Logo Bimas Buddha.png",
-      },
+      {"title": "Bagian Tata Usaha", "icon": "assets/images/Logo Bagian Tata Usaha.png"},
+      {"title": "Bidang Penyelenggaraan Haji dan Umrah", "icon": "assets/images/Logo Bidang Penyelenggaraan Haji dan Umrah.png"},
+      {"title": "Bidang Pendidikan Madrasah", "icon": "assets/images/Logo Bidang Pendidikan Madrasah.png"},
+      {"title": "Bidang Bimbingan Masyarakat Islam", "icon": "assets/images/Logo Bidang Bimbingan Masyarakat Islam.png"},
+      {"title": "Bimas Kristen", "icon": "assets/images/Logo Bimas Kristen.png"},
+      {"title": "Bimas Katolik", "icon": "assets/images/Logo Bimas Katolik.png"},
+      {"title": "Bimas Hindu", "icon": "assets/images/Logo Bimas Hindu.png"},
+      {"title": "Bimas Buddha", "icon": "assets/images/Logo Bimas Buddha.png"},
     ],
   },
   "internal": {
     "title": "Layanan Internal",
     "subtitle": "Sistem Internal Organisasi",
     "image": "assets/images/Logo Layanan Internal.png",
-    "layout": "grid", // ✅ pakai list vertical
+    "layout": "grid",
     "items": [
-      {"title": "Absensi", "icon": "assets/images/Logo Absensi.png"},
+      {"title": "Gembira", "icon": "assets/images/Logo Gembira.png"},
+      {"title": "Sihabba", "icon": "assets/images/Logo Sihabba.png"},
       {"title": "Bengkel IT", "icon": "assets/images/logo Bengkel IT.png"},
+      {"title": "SIKEMBAR", "icon": "assets/images/Logo SIKEMBAR.png"},
+      {"title": "Cuti", "icon": "assets/images/Logo Cuti.png"},
+      {"title": "RKB", "icon": "assets/images/Logo RKB.png"},
+      {"title": "BMN Kanwil", "icon": "assets/images/logo_gaspul.png"},
     ],
   },
   "kabupaten": {
@@ -70,6 +51,7 @@ final layananData = {
     "layout": "grid",
     "items": [
       {"title": "Guru", "icon": "assets/images/Logo Guru.png"},
+      {"title": "Sihabba", "icon": "assets/images/Logo Sihabba.png"},
     ],
   },
   "kua": {

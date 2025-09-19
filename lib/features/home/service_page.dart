@@ -6,6 +6,7 @@ import 'widgets/accessibility_menu.dart';
 import 'home_providers.dart';
 import 'package:gaspul/core/theme/theme.dart';
 import 'package:gaspul/core/widgets/accessible_tap.dart'; // 🔹 TTS wrapper
+import 'webview_page.dart';
 
 class ServicePage extends ConsumerWidget {
   final String layananKey; // 🔹 kunci data layanan (publik, internal, dll)
@@ -26,8 +27,19 @@ class ServicePage extends ConsumerWidget {
 
     final theme = Theme.of(context); // 🔹 ambil theme aktif
 
+    // 🔹 Daftar item yang membuka WebView
+    final webItems = {
+      "Sihabba": "https://sihabba.gaspul.com/admin/login",
+      "Cuti": "https://cuti.gaspul.com",
+      "Gembira": "https://gembira.gaspul.com",
+      "RKB": "https://lkbkanwil.gaspul.com",
+      "BMN Kanwil": "https://bmnkanwil.gaspul.com",
+      "Bengkel IT": "https://bengkel.gaspul.com",
+      "Podcast": "https://www.youtube.com/@kanwilkemenagsulbar386/videos",
+    };
+
     return Scaffold(
-      backgroundColor: theme.primaryColor, // 🔹 ikut kontras tinggi
+      backgroundColor: theme.primaryColor,
       body: Stack(
         children: [
           Column(
@@ -36,7 +48,7 @@ class ServicePage extends ConsumerWidget {
               Container(
                 height: 200,
                 decoration: BoxDecoration(
-                  color: theme.primaryColor, // 🔹 ikut kontras tinggi
+                  color: theme.primaryColor,
                 ),
                 child: Stack(
                   children: [
@@ -50,14 +62,14 @@ class ServicePage extends ConsumerWidget {
                           width: 40,
                           height: 40,
                           decoration: const BoxDecoration(
-                            color: Colors.white, // ✅ selalu putih
+                            color: Colors.white,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.arrow_back,
                             color: theme.brightness == Brightness.dark
-                                ? Colors.black // ✅ High Contrast → hitam
-                                : AppColors.primary, // ✅ Normal → hijau tua
+                                ? Colors.black
+                                : AppColors.primary,
                           ),
                         ),
                       ),
@@ -84,7 +96,7 @@ class ServicePage extends ConsumerWidget {
                               title,
                               style: theme.textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onPrimary, // 🔹 teks kontras
+                                color: theme.colorScheme.onPrimary,
                               ),
                             ),
                           ],
@@ -99,13 +111,9 @@ class ServicePage extends ConsumerWidget {
               Expanded(
                 child: Container(
                   margin: const EdgeInsets.all(0),
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    bottom: 16,
-                  ),
+                  padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
                   decoration: BoxDecoration(
-                    color: theme.scaffoldBackgroundColor, // 🔹 ikut kontras tinggi
+                    color: theme.scaffoldBackgroundColor,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(32),
                       topRight: Radius.circular(32),
@@ -118,8 +126,6 @@ class ServicePage extends ConsumerWidget {
                       ),
                     ],
                   ),
-
-                  // 🔹 child tetap pakai layout sesuai service_data
                   child: layout == "list"
                       ? ListView.builder(
                           itemCount: layananList.length,
@@ -127,6 +133,22 @@ class ServicePage extends ConsumerWidget {
                             final item = layananList[index];
                             return AccessibleTap(
                               label: item["title"] ?? "",
+                              onTap: () {
+                                if (webItems.containsKey(item["title"])) {
+                                  // 🔹 Buka WebView
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => WebViewPage(
+                                        url: webItems[item["title"]]!,
+                                        title: item["title"]!,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  // 🔹 Aksi normal / default jika ada
+                                }
+                              },
                               child: Card(
                                 margin: const EdgeInsets.symmetric(vertical: 8),
                                 child: Padding(
@@ -157,6 +179,21 @@ class ServicePage extends ConsumerWidget {
                             final item = layananList[index];
                             return AccessibleTap(
                               label: item["title"] ?? "",
+                              onTap: () {
+                                if (webItems.containsKey(item["title"])) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => WebViewPage(
+                                        url: webItems[item["title"]]!,
+                                        title: item["title"]!,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  // 🔹 Aksi normal jika diperlukan
+                                }
+                              },
                               child: Card(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -170,7 +207,9 @@ class ServicePage extends ConsumerWidget {
                                     Text(
                                       item["title"] ?? "",
                                       textAlign: TextAlign.center,
-                                      style: theme.textTheme.bodyMedium,
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                            fontWeight: FontWeight.w900,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -195,3 +234,209 @@ class ServicePage extends ConsumerWidget {
     );
   }
 }
+
+
+// Kode Sebelum Ditambahkan WebView
+// import 'package:flutter/material.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:gaspul/core/data/service_data.dart'; // 🔹 data layanan
+// import 'widgets/menu_button.dart';
+// import 'widgets/accessibility_menu.dart';
+// import 'home_providers.dart';
+// import 'package:gaspul/core/theme/theme.dart';
+// import 'package:gaspul/core/widgets/accessible_tap.dart'; // 🔹 TTS wrapper
+
+// class ServicePage extends ConsumerWidget {
+//   final String layananKey; // 🔹 kunci data layanan (publik, internal, dll)
+//   final String title; // 🔹 judul di header
+
+//   const ServicePage({super.key, required this.layananKey, required this.title});
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final isMenuOpen = ref.watch(accessibilityMenuProvider);
+
+//     // 🔹 Ambil data layanan berdasarkan key
+//     final layananConfig =
+//         layananData[layananKey] as Map<String, dynamic>? ?? {};
+//     final List<Map<String, String>> layananList =
+//         (layananConfig["items"] as List?)?.cast<Map<String, String>>() ?? [];
+//     final String layout = layananConfig["layout"] as String? ?? "grid";
+
+//     final theme = Theme.of(context); // 🔹 ambil theme aktif
+
+//     return Scaffold(
+//       backgroundColor: theme.primaryColor, // 🔹 ikut kontras tinggi
+//       body: Stack(
+//         children: [
+//           Column(
+//             children: [
+//               // 🔹 Header
+//               Container(
+//                 height: 200,
+//                 decoration: BoxDecoration(
+//                   color: theme.primaryColor, // 🔹 ikut kontras tinggi
+//                 ),
+//                 child: Stack(
+//                   children: [
+//                     // 🔹 Tombol kembali
+//                     Positioned(
+//                       top: 40,
+//                       left: 20,
+//                       child: GestureDetector(
+//                         onTap: () => Navigator.pop(context),
+//                         child: Container(
+//                           width: 40,
+//                           height: 40,
+//                           decoration: const BoxDecoration(
+//                             color: Colors.white, // ✅ selalu putih
+//                             shape: BoxShape.circle,
+//                           ),
+//                           child: Icon(
+//                             Icons.arrow_back,
+//                             color: theme.brightness == Brightness.dark
+//                                 ? Colors
+//                                       .black // ✅ High Contrast → hitam
+//                                 : AppColors.primary, // ✅ Normal → hijau tua
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+
+//                     // 🔹 Tombol Menu
+//                     const Positioned(top: 40, right: 20, child: MenuButton()),
+
+//                     // 🔹 Isi header
+//                     Align(
+//                       alignment: Alignment.bottomCenter,
+//                       child: Padding(
+//                         padding: const EdgeInsets.only(bottom: 20),
+//                         child: Column(
+//                           mainAxisSize: MainAxisSize.min,
+//                           children: [
+//                             if (layananConfig["image"] != null)
+//                               Image.asset(
+//                                 layananConfig["image"] as String,
+//                                 height: 80,
+//                               ),
+//                             const SizedBox(height: 4),
+//                             Text(
+//                               title,
+//                               style: theme.textTheme.titleLarge?.copyWith(
+//                                 fontWeight: FontWeight.bold,
+//                                 color: theme
+//                                     .colorScheme
+//                                     .onPrimary, // 🔹 teks kontras
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+
+//               // 🔹 Konten layanan
+//               Expanded(
+//                 child: Container(
+//                   margin: const EdgeInsets.all(0),
+//                   padding: const EdgeInsets.only(
+//                     left: 20,
+//                     right: 20,
+//                     bottom: 16,
+//                   ),
+//                   decoration: BoxDecoration(
+//                     color:
+//                         theme.scaffoldBackgroundColor, // 🔹 ikut kontras tinggi
+//                     borderRadius: const BorderRadius.only(
+//                       topLeft: Radius.circular(32),
+//                       topRight: Radius.circular(32),
+//                     ),
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Colors.black.withOpacity(0.1),
+//                         blurRadius: 8,
+//                         offset: const Offset(0, 4),
+//                       ),
+//                     ],
+//                   ),
+
+//                   // 🔹 child tetap pakai layout sesuai service_data
+//                   child: layout == "list"
+//                       ? ListView.builder(
+//                           itemCount: layananList.length,
+//                           itemBuilder: (context, index) {
+//                             final item = layananList[index];
+//                             return AccessibleTap(
+//                               label: item["title"] ?? "",
+//                               child: Card(
+//                                 margin: const EdgeInsets.symmetric(vertical: 8),
+//                                 child: Padding(
+//                                   padding: const EdgeInsets.all(18),
+//                                   child: ListTile(
+//                                     leading: Image.asset(
+//                                       item["icon"]!,
+//                                       height: 45,
+//                                       width: 45,
+//                                     ),
+//                                     title: Text(item["title"] ?? ""),
+//                                   ),
+//                                 ),
+//                               ),
+//                             );
+//                           },
+//                         )
+//                       : GridView.builder(
+//                           gridDelegate:
+//                               const SliverGridDelegateWithFixedCrossAxisCount(
+//                                 crossAxisCount: 2,
+//                                 mainAxisSpacing: 16,
+//                                 crossAxisSpacing: 16,
+//                                 childAspectRatio: 1,
+//                               ),
+//                           itemCount: layananList.length,
+//                           itemBuilder: (context, index) {
+//                             final item = layananList[index];
+//                             return AccessibleTap(
+//                               label: item["title"] ?? "",
+//                               child: Card(
+//                                 child: Column(
+//                                   mainAxisAlignment: MainAxisAlignment.center,
+//                                   children: [
+//                                     Image.asset(
+//                                       item["icon"]!,
+//                                       height: 75,
+//                                       width: 75,
+//                                     ),
+//                                     const SizedBox(height: 10),
+//                                     Text(
+//                                       item["title"] ?? "",
+//                                       textAlign: TextAlign.center,
+//                                       style: theme.textTheme.bodySmall?.copyWith(
+//                                             fontWeight: FontWeight.w900, // font super tebal
+//                                           ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                 ),
+//               ),
+//             ],
+//           ),
+
+//           // 🔹 Popup Accessibility Menu
+//           if (isMenuOpen)
+//             AccessibilityMenu(
+//               onClose: () {
+//                 ref.read(accessibilityMenuProvider.notifier).state = false;
+//               },
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+// }

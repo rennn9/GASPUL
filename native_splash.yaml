@@ -1,0 +1,7 @@
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+  background_image: assets/images/background.png
+  image: assets/images/Logo_Kementrian_Agama.png
+  branding: assets/images/branding.png
