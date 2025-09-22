@@ -7,6 +7,7 @@ import 'home_providers.dart';
 import 'package:gaspul/core/theme/theme.dart';
 import 'package:gaspul/core/widgets/accessible_tap.dart'; // 🔹 TTS wrapper
 import 'webview_page.dart';
+import 'package:gaspul/core/routes/no_animation_route.dart'; // 🔹 no-animation route
 
 class ServicePage extends ConsumerWidget {
   final String layananKey; // 🔹 kunci data layanan (publik, internal, dll)
@@ -47,9 +48,7 @@ class ServicePage extends ConsumerWidget {
               // 🔹 Header
               Container(
                 height: 200,
-                decoration: BoxDecoration(
-                  color: theme.primaryColor,
-                ),
+                decoration: BoxDecoration(color: theme.primaryColor),
                 child: Stack(
                   children: [
                     // 🔹 Tombol kembali
@@ -94,7 +93,7 @@ class ServicePage extends ConsumerWidget {
                             const SizedBox(height: 4),
                             Text(
                               title,
-                              style: theme.textTheme.titleLarge?.copyWith(
+                              style: theme.textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.onPrimary,
                               ),
@@ -111,7 +110,11 @@ class ServicePage extends ConsumerWidget {
               Expanded(
                 child: Container(
                   margin: const EdgeInsets.all(0),
-                  padding: const EdgeInsets.only(left: 20, right: 20, bottom: 16),
+                  padding: const EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    bottom: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
                     borderRadius: const BorderRadius.only(
@@ -135,10 +138,9 @@ class ServicePage extends ConsumerWidget {
                               label: item["title"] ?? "",
                               onTap: () {
                                 if (webItems.containsKey(item["title"])) {
-                                  // 🔹 Buka WebView
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
+                                  // 🔹 Buka WebView tanpa animasi
+                                  Navigator.of(context).push(
+                                    NoAnimationRoute(
                                       builder: (context) => WebViewPage(
                                         url: webItems[item["title"]]!,
                                         title: item["title"]!,
@@ -146,7 +148,7 @@ class ServicePage extends ConsumerWidget {
                                     ),
                                   );
                                 } else {
-                                  // 🔹 Aksi normal / default jika ada
+                                  // 🔹 aksi default jika ada
                                 }
                               },
                               child: Card(
@@ -169,11 +171,11 @@ class ServicePage extends ConsumerWidget {
                       : GridView.builder(
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 16,
-                            childAspectRatio: 1,
-                          ),
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 16,
+                                childAspectRatio: 1,
+                              ),
                           itemCount: layananList.length,
                           itemBuilder: (context, index) {
                             final item = layananList[index];
@@ -181,9 +183,8 @@ class ServicePage extends ConsumerWidget {
                               label: item["title"] ?? "",
                               onTap: () {
                                 if (webItems.containsKey(item["title"])) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
+                                  Navigator.of(context).push(
+                                    NoAnimationRoute(
                                       builder: (context) => WebViewPage(
                                         url: webItems[item["title"]]!,
                                         title: item["title"]!,
@@ -191,7 +192,7 @@ class ServicePage extends ConsumerWidget {
                                     ),
                                   );
                                 } else {
-                                  // 🔹 Aksi normal jika diperlukan
+                                  // 🔹 aksi default jika ada
                                 }
                               },
                               child: Card(
@@ -207,7 +208,8 @@ class ServicePage extends ConsumerWidget {
                                     Text(
                                       item["title"] ?? "",
                                       textAlign: TextAlign.center,
-                                      style: theme.textTheme.bodySmall?.copyWith(
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(
                                             fontWeight: FontWeight.w900,
                                           ),
                                     ),
@@ -234,7 +236,6 @@ class ServicePage extends ConsumerWidget {
     );
   }
 }
-
 
 // Kode Sebelum Ditambahkan WebView
 // import 'package:flutter/material.dart';

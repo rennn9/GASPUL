@@ -45,8 +45,7 @@ class Header extends StatelessWidget {
               SizedBox(height: textTopMargin),
               Text(
                 "Gerakan Aktif Sistimatis Pelayanan Unggul",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 14,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                       color: colorScheme.onPrimary,
                     ),

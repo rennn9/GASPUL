@@ -12,6 +12,8 @@ import 'package:gaspul/core/data/service_data.dart'; // ✅ ambil data layanan
 import 'package:gaspul/core/theme/theme.dart'; // ✅ AppColors
 import 'package:gaspul/features/home/webview_page.dart';
 
+import 'package:gaspul/core/routes/no_animation_route.dart';
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -22,7 +24,8 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.brightness == Brightness.dark
-          ? theme.scaffoldBackgroundColor // ✅ High Contrast → hitam
+          ? theme
+                .scaffoldBackgroundColor // ✅ High Contrast → hitam
           : AppColors.primary, // ✅ Normal → hijau tua
       body: Stack(
         children: [
@@ -35,19 +38,18 @@ class HomeScreen extends ConsumerWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
+                    horizontal: 8,
+                    vertical: 8,
                   ),
                   child: Stack(
                     children: [
-                    const GlassContainer(),
-
+                      const GlassContainer(),
 
                       // 🔹 Grid menu
                       GridView.count(
                         padding: const EdgeInsets.all(20),
                         crossAxisCount: 2,
-                        crossAxisSpacing: 16,
+                        crossAxisSpacing: 8,
                         mainAxisSpacing: 16,
                         children: layananData.entries.map((entry) {
                           final key = entry.key;
@@ -61,18 +63,15 @@ class HomeScreen extends ConsumerWidget {
                             // 🔹 Aksi klik card
                             onTap: () {
                               if (key == "publik") {
-                                // Card "publik" buka WebView
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const WebViewPage(
+                                Navigator.of(context).push(
+                                  NoAnimationRoute(
+                                    builder: (context) => WebViewPage(
                                       url: "https://gaspul.com/home",
-                                      title: "Gaspul",
+                                      title: "GASPUL",
                                     ),
                                   ),
                                 );
                               } else {
-                                // Card lainnya buka ServicePage
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(

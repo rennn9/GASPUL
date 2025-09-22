@@ -15,7 +15,7 @@ dependencies:
   flutter_native_splash: ^2.4.6
   google_fonts: ^6.2.1
   flutter_tts: ^3.7.0
-  webview_flutter: 4.13.0
+  flutter_inappwebview: ^6.1.5
 
 
 dev_dependencies:
@@ -65,7 +65,7 @@ flutter:
     - assets/images/Logo RKB.png
     - assets/images/Logo Gembira.png
     - assets/images/Logo SIKEMBAR.png
-    - assets/images/Logo_Kementrian_Agama.png
+    - assets/images/Logo KEMENAG.png
     - assets/images/Pattern Down.png
     - assets/images/Pattern Up.png
     - assets/images/Logo Sihabba.png

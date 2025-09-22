@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaspul/core/theme/theme.dart';
 import 'package:gaspul/features/home/home_screen.dart';
-import 'package:gaspul/features/home/splash_page.dart'; // ✅ import splash page
+import 'package:gaspul/features/home/splash_first.dart'; // ✅ splash page pertama
 import 'package:gaspul/features/home/widgets/accessibility_provider.dart';
 
 void main() {
@@ -22,12 +22,12 @@ class MyApp extends ConsumerWidget {
     final accessibility = ref.watch(accessibilityProvider);
 
     return MaterialApp(
-      title: 'Gaspul',
+      title: 'GASPUL',
       debugShowCheckedModeBanner: false,
       theme: accessibility.highContrast
           ? AppTheme.highContrastTheme
           : AppTheme.lightTheme,
-      home: const SplashPage(), // ✅ tampilkan splash page pertama
+      home: const SplashFirst(), // ✅ tampilkan splash page pertama
     );
   }
 }
