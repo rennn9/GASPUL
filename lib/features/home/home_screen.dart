@@ -6,12 +6,12 @@ import 'widgets/header.dart';
 import 'widgets/glass_container.dart';
 import 'widgets/menu_card.dart';
 import 'widgets/accessibility_menu.dart';
+import 'widgets/kemenag_button.dart';
 import 'service_page.dart';
 import 'home_providers.dart';
 import 'package:gaspul/core/data/service_data.dart'; // ✅ ambil data layanan
 import 'package:gaspul/core/theme/theme.dart'; // ✅ AppColors
 import 'package:gaspul/features/home/webview_page.dart';
-
 import 'package:gaspul/core/routes/no_animation_route.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -34,18 +34,13 @@ class HomeScreen extends ConsumerWidget {
               // 🔹 Header
               const Header(),
 
-              // 🔹 Grid dengan glass container belakang
+              // 🔹 Grid dengan glass container di belakang
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 48),
                   child: Stack(
                     children: [
                       const GlassContainer(),
-
-                      // 🔹 Grid menu
                       GridView.count(
                         padding: const EdgeInsets.all(20),
                         crossAxisCount: 2,
@@ -90,32 +85,40 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-
-              // 🔹 Copyright di bagian bawah Scaffold
-              Padding(
-                padding: const EdgeInsets.only(bottom: 22),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(
-                      Icons.copyright,
-                      size: 14,
-                      color: Colors.white, // selalu putih
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      "Sistem Informasi dan Data",
-                      style: TextStyle(
-                        color: Colors.white, // selalu putih
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
+          ),
+
+          // 🔹 Bar putih di bawah
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: 40, // bisa kamu atur sesuai kebutuhan
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(80),
+                  topRight: Radius.circular(80),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 6,
+                    offset: Offset(0, -2),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 🔹 Tombol Kemenag (nongol setengah)
+          Positioned(
+            bottom: 8, // jarak dari bawah → setengah tombol keluar
+            left: 0,
+            right: 0,
+            child: Center(
+              child:
+                  KemenagButton(), // ukuran tombol tetap, tidak terpengaruh bar
+            ),
           ),
 
           // 🔹 Popup Accessibility Menu

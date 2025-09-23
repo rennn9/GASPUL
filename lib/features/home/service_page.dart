@@ -172,8 +172,8 @@ class ServicePage extends ConsumerWidget {
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                mainAxisSpacing: 16,
-                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 14,
+                                crossAxisSpacing: 14,
                                 childAspectRatio: 1,
                               ),
                           itemCount: layananList.length,

@@ -72,4 +72,14 @@ final layananData = {
       {"title": "Podcast", "icon": "assets/images/Logo Podcast.png"},
     ],
   },
+  "pengaduan": {
+    "title": "Pengaduan",
+    "subtitle": "Layanan Pengaduan",
+    "image": "assets/images/Logo Pengaduan.png",
+    "layout": "grid",
+    "items": [
+      {"title": "Pengaduan \nMasyarakat", "icon": "assets/images/Logo Pengaduan Masyarakat.png"},
+      {"title": "Pengaduan \nPelayanan", "icon": "assets/images/Logo Pengaduan Pelayanan.png"},
+    ],
+  },
 };

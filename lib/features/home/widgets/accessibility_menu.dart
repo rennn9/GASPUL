@@ -34,6 +34,8 @@ class AccessibilityMenu extends ConsumerWidget {
         : AppColors.primary;
 
     final readContent = ref.watch(accessibilityProvider).readContent;
+    final highContrast = ref.watch(accessibilityProvider).highContrast;
+    final largeText = ref.watch(accessibilityProvider).largeText;
 
     return Positioned.fill(
       child: Stack(
@@ -70,7 +72,10 @@ class AccessibilityMenu extends ConsumerWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.95),
                       borderRadius: const BorderRadius.only(
@@ -87,8 +92,11 @@ class AccessibilityMenu extends ConsumerWidget {
                           label: "Kontras\nTinggi",
                           backgroundColor: buttonColor,
                           readContent: readContent,
+                          isActive: highContrast,
                           onTap: () {
-                            ref.read(accessibilityProvider.notifier).toggleHighContrast();
+                            ref
+                                .read(accessibilityProvider.notifier)
+                                .toggleHighContrast();
                           },
                         ),
                         const SizedBox(height: 12),
@@ -97,8 +105,11 @@ class AccessibilityMenu extends ConsumerWidget {
                           label: "Teks\nBesar",
                           backgroundColor: buttonColor,
                           readContent: readContent,
+                          isActive: largeText,
                           onTap: () {
-                            ref.read(accessibilityProvider.notifier).toggleLargeText();
+                            ref
+                                .read(accessibilityProvider.notifier)
+                                .toggleLargeText();
                           },
                         ),
                         const SizedBox(height: 12),
@@ -107,8 +118,11 @@ class AccessibilityMenu extends ConsumerWidget {
                           label: "Baca\nKonten",
                           backgroundColor: buttonColor,
                           readContent: readContent,
+                          isActive: readContent,
                           onTap: () {
-                            ref.read(accessibilityProvider.notifier).toggleReadContent();
+                            ref
+                                .read(accessibilityProvider.notifier)
+                                .toggleReadContent();
                           },
                         ),
                       ],
@@ -129,7 +143,8 @@ class _MenuButton extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
   final Color backgroundColor;
-  final bool readContent; // 🔹 apakah fitur baca konten aktif
+  final bool readContent;
+  final bool isActive;
 
   const _MenuButton({
     required this.icon,
@@ -137,18 +152,22 @@ class _MenuButton extends StatelessWidget {
     required this.onTap,
     required this.backgroundColor,
     required this.readContent,
+    this.isActive = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final activeColor = Colors.orange; // tombol aktif
+    final btnColor = isActive ? activeColor : backgroundColor;
+
     return Material(
-      color: backgroundColor,
+      color: btnColor,
       borderRadius: BorderRadius.circular(14),
+      elevation: isActive ? 4 : 0,
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
         onTap: () {
           if (readContent) {
-            // baca label, hapus newline agar enak dibaca
             TtsService.speak(label.replaceAll('\n', ' '));
           }
           if (onTap != null) onTap!();
@@ -169,8 +188,10 @@ class _MenuButton extends StatelessWidget {
                 maxLines: 2,
                 softWrap: true,
                 overflow: TextOverflow.visible,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),

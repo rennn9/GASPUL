@@ -51,36 +51,29 @@ class _SplashFirstState extends State<SplashFirst>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          // Logo KEMENAG di tengah
-          Center(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Image.asset(
+      body: Center(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, // vertikal center
+            crossAxisAlignment: CrossAxisAlignment.center, // horizontal center
+            children: [
+              Image.asset(
                 'assets/images/Logo KEMENAG.png',
-                height: 150, // sesuaikan ukuran
+                height: 110, // sesuaikan ukuran
               ),
-            ),
-          ),
-
-          // Teks di bagian bawah
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 40.0),
-              child: Text(
-                'Kementrian Agama\nWilayah Sulawesi Barat',
+              const SizedBox(height: 10), // gap antar elemen
+              Text(
+                'Kantor Wilayah Kementrian Agama\nProvinsi Sulawesi Barat',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 20,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: Colors.black87,
+                  color: Colors.black87, // tetap bisa diatur warna
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
