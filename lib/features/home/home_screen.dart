@@ -88,18 +88,20 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
 
-          // 🔹 Bar putih di bawah
+          // 🔹 Bar bawah responsive theme
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: 40, // bisa kamu atur sesuai kebutuhan
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              height: 40, // bisa diatur sesuai kebutuhan
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[800]  // abu-abu gelap saat high contrast
+                    : Colors.white,      // putih saat normal
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(80),
                   topRight: Radius.circular(80),
                 ),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
                     blurRadius: 6,

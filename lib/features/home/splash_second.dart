@@ -40,48 +40,59 @@ class _SplashSecondState extends State<SplashSecond>
     });
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: Stack(
+      children: [
+        // Pattern atas
+        Align(
+          alignment: Alignment.topCenter,
+          child: Image.asset(
+            'assets/images/Pattern Down.png',
+            fit: BoxFit.fitWidth,
+          ),
+        ),
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          // Pattern atas
-          Align(
-            alignment: Alignment.topCenter,
+        // Pattern bawah
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Image.asset(
+            'assets/images/Pattern Up.png',
+            fit: BoxFit.fitWidth,
+          ),
+        ),
+
+        // Logo GASPUL di tengah dengan animasi fade
+        Center(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
             child: Image.asset(
-              'assets/images/Pattern Down.png',
-              fit: BoxFit.fitWidth,
+              'assets/images/logo_gaspul.png',
+              height: 120, // bisa disesuaikan
             ),
           ),
+        ),
 
-          // Pattern bawah
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Image.asset(
-              'assets/images/Pattern Up.png',
-              fit: BoxFit.fitWidth,
-            ),
-          ),
-
-          // Logo GASPUL di tengah dengan animasi fade
-          Center(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Image.asset(
-                'assets/images/logo_gaspul.png',
-                height: 120, // bisa disesuaikan
+        // Copyright di bawah
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 24), // jarak dari bawah
+            child: Text(
+              '© 2025 SISTEM INFORMASI DAN DATA',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
 }

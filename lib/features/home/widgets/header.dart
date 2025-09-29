@@ -14,24 +14,51 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme; // 🔹 ambil warna dari theme
+    final isHighContrast = Theme.of(context).brightness == Brightness.dark;
 
     return Stack(
       children: [
+        // 🔹 Background dengan gambar
         Container(
           width: double.infinity,
           height: 200,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/Geometric Pattern.png"),
-              fit: BoxFit.cover,
-            ),
+          child: Stack(
+            children: [
+              // Gambar geometric
+              Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/Geometric Pattern.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              // Gradient fade hanya muncul saat normal
+              if (!isHighContrast)
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Color(0xFF017787), // warna background hijau
+                      ],
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
+
+        // 🔹 Tombol menu
         Positioned(
           top: topPadding,
           right: 20,
-          child: const MenuButton(), // 🔹 tombol menu mengikuti top padding
+          child: const MenuButton(),
         ),
+
+        // 🔹 Logo + teks
         Positioned(
           top: topPadding,
           left: 0,

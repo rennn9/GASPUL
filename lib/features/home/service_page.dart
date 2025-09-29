@@ -9,6 +9,10 @@ import 'package:gaspul/core/widgets/accessible_tap.dart'; // 🔹 TTS wrapper
 import 'webview_page.dart';
 import 'package:gaspul/core/routes/no_animation_route.dart'; // 🔹 no-animation route
 
+// 🔹 Import form pages
+import 'package:gaspul/features/forms/pengaduan_masyarakat_form.dart';
+import 'package:gaspul/features/forms/pengaduan_pelayanan_form.dart';
+
 class ServicePage extends ConsumerWidget {
   final String layananKey; // 🔹 kunci data layanan (publik, internal, dll)
   final String title; // 🔹 judul di header
@@ -27,17 +31,6 @@ class ServicePage extends ConsumerWidget {
     final String layout = layananConfig["layout"] as String? ?? "grid";
 
     final theme = Theme.of(context); // 🔹 ambil theme aktif
-
-    // 🔹 Daftar item yang membuka WebView
-    final webItems = {
-      "Sihabba": "https://sihabba.gaspul.com/admin/login",
-      "Cuti": "https://cuti.gaspul.com",
-      "Gembira": "https://gembira.gaspul.com",
-      "RKB": "https://lkbkanwil.gaspul.com",
-      "BMN Kanwil": "https://bmnkanwil.gaspul.com",
-      "Bengkel IT": "https://bengkel.gaspul.com",
-      "Podcast": "https://www.youtube.com/@kanwilkemenagsulbar386/videos",
-    };
 
     return Scaffold(
       backgroundColor: theme.primaryColor,
@@ -137,18 +130,30 @@ class ServicePage extends ConsumerWidget {
                             return AccessibleTap(
                               label: item["title"] ?? "",
                               onTap: () {
-                                if (webItems.containsKey(item["title"])) {
-                                  // 🔹 Buka WebView tanpa animasi
+                                final title = item["title"];
+                                if (item["link"] != null) {
                                   Navigator.of(context).push(
                                     NoAnimationRoute(
                                       builder: (context) => WebViewPage(
-                                        url: webItems[item["title"]]!,
-                                        title: item["title"]!,
+                                        url: item["link"]!,
+                                        title: title!,
                                       ),
                                     ),
                                   );
-                                } else {
-                                  // 🔹 aksi default jika ada
+                                } else if (title == "Pengaduan Masyarakat") {
+                                  Navigator.of(context).push(
+                                    NoAnimationRoute(
+                                      builder: (context) =>
+                                          const PengaduanMasyarakatForm(),
+                                    ),
+                                  );
+                                } else if (title == "Pengaduan Pelayanan") {
+                                  Navigator.of(context).push(
+                                    NoAnimationRoute(
+                                      builder: (context) =>
+                                          const PengaduanPelayananForm(),
+                                    ),
+                                  );
                                 }
                               },
                               child: Card(
@@ -182,17 +187,30 @@ class ServicePage extends ConsumerWidget {
                             return AccessibleTap(
                               label: item["title"] ?? "",
                               onTap: () {
-                                if (webItems.containsKey(item["title"])) {
+                                final title = item["title"];
+                                if (item["link"] != null) {
                                   Navigator.of(context).push(
                                     NoAnimationRoute(
                                       builder: (context) => WebViewPage(
-                                        url: webItems[item["title"]]!,
-                                        title: item["title"]!,
+                                        url: item["link"]!,
+                                        title: title!,
                                       ),
                                     ),
                                   );
-                                } else {
-                                  // 🔹 aksi default jika ada
+                                } else if (title == "Pengaduan Masyarakat") {
+                                  Navigator.of(context).push(
+                                    NoAnimationRoute(
+                                      builder: (context) =>
+                                          const PengaduanMasyarakatForm(),
+                                    ),
+                                  );
+                                } else if (title == "Pengaduan Pelayanan") {
+                                  Navigator.of(context).push(
+                                    NoAnimationRoute(
+                                      builder: (context) =>
+                                          const PengaduanPelayananForm(),
+                                    ),
+                                  );
                                 }
                               },
                               child: Card(
@@ -236,6 +254,8 @@ class ServicePage extends ConsumerWidget {
     );
   }
 }
+
+
 
 // Kode Sebelum Ditambahkan WebView
 // import 'package:flutter/material.dart';

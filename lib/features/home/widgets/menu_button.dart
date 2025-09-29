@@ -26,9 +26,9 @@ class MenuButton extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(6),
           child: Icon(
-            Icons.menu,
+            Icons.accessible, // 🔹 icon disabilitas (orang di kursi roda)
             color: iconColor,
-            size: 28,
+            size: 38,
           ),
         ),
       ),

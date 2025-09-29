@@ -21,7 +21,20 @@ class TtsService {
 class AccessibilityMenu extends ConsumerWidget {
   final VoidCallback onClose;
 
-  const AccessibilityMenu({super.key, required this.onClose});
+  /// 🔹 Tambahkan parameter opsional untuk override posisi
+  final double? top;
+  final double? right;
+  final double? left;
+  final double? bottom;
+
+  const AccessibilityMenu({
+    super.key,
+    required this.onClose,
+    this.top,
+    this.right,
+    this.left,
+    this.bottom,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,8 +58,10 @@ class AccessibilityMenu extends ConsumerWidget {
             child: Container(color: Colors.black.withOpacity(0)),
           ),
           Positioned(
-            top: 40,
-            right: 20,
+            top: top ?? 40,
+            right: right ?? 20,
+            left: left,
+            bottom: bottom,
             child: Material(
               color: Colors.transparent,
               elevation: 100,
@@ -189,9 +204,9 @@ class _MenuButton extends StatelessWidget {
                 softWrap: true,
                 overflow: TextOverflow.visible,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ],
           ),

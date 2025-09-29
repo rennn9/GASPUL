@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class WebViewPage extends StatefulWidget {
   final String url;
@@ -18,6 +19,20 @@ class WebViewPage extends StatefulWidget {
 class _WebViewPageState extends State<WebViewPage> {
   bool isLoading = true;
   InAppWebViewController? _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    await [
+      Permission.camera,
+      Permission.photos,
+      Permission.storage,
+    ].request();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +55,10 @@ class _WebViewPageState extends State<WebViewPage> {
             initialOptions: InAppWebViewGroupOptions(
               crossPlatform: InAppWebViewOptions(
                 javaScriptEnabled: true,
+                mediaPlaybackRequiresUserGesture: false,
+              ),
+              android: AndroidInAppWebViewOptions(
+                useHybridComposition: true,
               ),
             ),
             onWebViewCreated: (controller) {

@@ -2,12 +2,22 @@
 import 'package:flutter/material.dart';
 import 'package:gaspul/core/routes/no_animation_route.dart';
 import 'package:gaspul/features/home/webview_page.dart';
+import 'package:gaspul/core/theme/theme.dart';
 
 class KemenagButton extends StatelessWidget {
   const KemenagButton({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // 🔹 Warna tombol mengikuti theme: putih normal, hitam high contrast
+    final buttonColor = theme.brightness == Brightness.dark
+        ? Colors.black
+        : Colors.white;
+
+    final borderColor = const Color(0xFFF7D914); // tetap kuning stroke
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
@@ -24,9 +34,9 @@ class KemenagButton extends StatelessWidget {
         height: 70,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white,
+          color: buttonColor,
           border: Border.all(
-            color: const Color(0xFFF7D914), // kuning stroke
+            color: borderColor,
             width: 4,
           ),
           boxShadow: [

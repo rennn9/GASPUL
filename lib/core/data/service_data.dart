@@ -1,3 +1,5 @@
+// lib/core/data/service_data.dart
+
 final layananData = {
   "publik": {
     "title": "Layanan Publik",
@@ -21,13 +23,40 @@ final layananData = {
     "image": "assets/images/Logo Layanan Internal.png",
     "layout": "grid",
     "items": [
-      {"title": "Gembira", "icon": "assets/images/Logo Gembira.png"},
-      {"title": "Sihabba", "icon": "assets/images/Logo Sihabba.png"},
-      {"title": "Bengkel IT", "icon": "assets/images/logo Bengkel IT.png"},
-      {"title": "SIKEMBAR", "icon": "assets/images/Logo SIKEMBAR.png"},
-      {"title": "Cuti", "icon": "assets/images/Logo Cuti.png"},
-      {"title": "RKB", "icon": "assets/images/Logo RKB.png"},
-      {"title": "BMN Kanwil", "icon": "assets/images/logo_gaspul.png"},
+      {
+        "title": "Gembira",
+        "icon": "assets/images/Logo Gembira.png",
+        "link": "https://gembira.gaspul.com"
+      },
+      {
+        "title": "Sihabba",
+        "icon": "assets/images/Logo Sihabba.png",
+        "link": "https://sihabba.gaspul.com/admin/login"
+      },
+      {
+        "title": "Bengkel IT",
+        "icon": "assets/images/logo Bengkel IT.png",
+        "link": "https://bengkel.gaspul.com"
+      },
+      {
+        "title": "SIKEMBAR",
+        "icon": "assets/images/Logo SIKEMBAR.png"
+      },
+      {
+        "title": "Cuti",
+        "icon": "assets/images/Logo Cuti.png",
+        "link": "https://cuti.gaspul.com"
+      },
+      {
+        "title": "RKB",
+        "icon": "assets/images/Logo RKB.png",
+        "link": "https://lkbkanwil.gaspul.com"
+      },
+      {
+        "title": "BMN Kanwil",
+        "icon": "assets/images/logo_gaspul.png",
+        "link": "https://bmnkanwil.gaspul.com"
+      },
     ],
   },
   "kabupaten": {
@@ -44,23 +73,56 @@ final layananData = {
       {"title": "Polewali Mandar", "icon": "assets/images/Logo Kabupaten Polewali Mandar.png"},
     ],
   },
-  "pendidikan": {
-    "title": "Layanan Pendidikan",
-    "subtitle": "Layanan Pendidikan",
-    "image": "assets/images/Logo Layanan Pendidikan.png",
-    "layout": "grid",
-    "items": [
-      {"title": "Guru", "icon": "assets/images/Logo Guru.png"},
-      {"title": "Sihabba", "icon": "assets/images/Logo Sihabba.png"},
-    ],
-  },
+"pendidikan": {
+  "title": "Layanan Pendidikan",
+  "subtitle": "Layanan Pendidikan",
+  "image": "assets/images/Logo Layanan Pendidikan.png",
+  "layout": "grid",
+  "items": [
+    {
+      "title": "SIAGA",
+      "icon": "assets/images/Logo SIAGA.png",
+      "link": "https://siagapendis.kemenag.go.id/"
+    },
+    {
+      "title": "Emis",
+      "icon": "assets/images/Logo Emis.png",
+      "link": "https://emis.kemenag.go.id/"
+    },
+    {
+      "title": "Sihabba",
+      "icon": "assets/images/Logo Sihabba.png",
+      "link": "https://sihabba.gaspul.com/admin/login"
+    },
+    {
+      "title": "SIMPATIKA",
+      "icon": "assets/images/Logo SIMPATIKA.png",
+      "link": "https://simpatika.kemenag.go.id/"
+    },
+    {
+      "title": "PDUM",
+      "icon": "assets/images/Logo PDUM.png",
+      "link": "https://pdum.kemenag.go.id/"
+    },
+    {
+      "title": "GTK Madrasah",
+      "icon": "assets/images/Logo GTK Madrasah.png",
+      "link": "https://emisgtk.kemenag.go.id/"
+    },
+  ],
+},
+
   "kua": {
     "title": "Layanan KUA",
     "subtitle": "Kantor Urusan Agama",
     "image": "assets/images/Logo KUA.png",
     "layout": "grid",
     "items": [
-      {"title": "Pencatatan Nikah", "icon": "assets/images/Logo Pencatatan Nikah.png"},
+      {
+        "title": "Simkah",
+        "icon": "assets/images/logo Simkah.png",
+        "link": "https://simkah4.kemenag.go.id/"
+      },
     ],
   },
   "rubrik": {
@@ -69,7 +131,11 @@ final layananData = {
     "image": "assets/images/Logo Rubrik.png",
     "layout": "grid",
     "items": [
-      {"title": "Podcast", "icon": "assets/images/Logo Podcast.png"},
+      {
+        "title": "Podcast",
+        "icon": "assets/images/Logo Podcast.png",
+        "link": "https://www.youtube.com/@kanwilkemenagsulbar386/videos"
+      },
     ],
   },
   "pengaduan": {
@@ -78,8 +144,24 @@ final layananData = {
     "image": "assets/images/Logo Pengaduan.png",
     "layout": "grid",
     "items": [
-      {"title": "Pengaduan \nMasyarakat", "icon": "assets/images/Logo Pengaduan Masyarakat.png"},
-      {"title": "Pengaduan \nPelayanan", "icon": "assets/images/Logo Pengaduan Pelayanan.png"},
+      {
+        "title": "Simdumas ITJEN",
+        "icon": "assets/images/logo Dumas ITJEN.png",
+        "link": "https://simdumas.kemenag.go.id/"
+      },
+      {
+        "title": "LAPOR",
+        "icon": "assets/images/logo LAPOR.png",
+        "link": "https://prod.lapor.go.id/"
+      },
+      {
+        "title": "Pengaduan Masyarakat",
+        "icon": "assets/images/Logo Pengaduan Masyarakat.png"
+      },
+      {
+        "title": "Pengaduan Pelayanan",
+        "icon": "assets/images/Logo Pengaduan Pelayanan.png"
+      },
     ],
   },
 };
