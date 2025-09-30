@@ -18,6 +18,7 @@ class WebViewPage extends StatefulWidget {
 
 class _WebViewPageState extends State<WebViewPage> {
   bool isLoading = true;
+  int progress = 0;
   InAppWebViewController? _controller;
 
   @override
@@ -31,6 +32,7 @@ class _WebViewPageState extends State<WebViewPage> {
       Permission.camera,
       Permission.photos,
       Permission.storage,
+      Permission.location, // ✅ tambahin juga lokasi
     ].request();
   }
 
@@ -45,6 +47,24 @@ class _WebViewPageState extends State<WebViewPage> {
             onPressed: () => _controller?.reload(),
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: progress < 100
+              ? ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Colors.red, Colors.green, Colors.blue],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ).createShader(bounds),
+                  child: LinearProgressIndicator(
+                    value: progress / 100,
+                    backgroundColor: Colors.transparent,
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                    minHeight: 3,
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
       ),
       body: Stack(
         children: [
@@ -64,14 +84,11 @@ class _WebViewPageState extends State<WebViewPage> {
             onWebViewCreated: (controller) {
               _controller = controller;
             },
-            onLoadStart: (controller, url) {
-              setState(() => isLoading = true);
-            },
-            onLoadStop: (controller, url) {
-              setState(() => isLoading = false);
-            },
-            onReceivedError: (controller, request, error) {
-              setState(() => isLoading = false);
+            onProgressChanged: (controller, progressValue) {
+              setState(() {
+                progress = progressValue;
+                isLoading = progressValue < 100;
+              });
             },
           ),
           if (isLoading)
