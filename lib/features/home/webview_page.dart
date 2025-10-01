@@ -16,15 +16,29 @@ class WebViewPage extends StatefulWidget {
   State<WebViewPage> createState() => _WebViewPageState();
 }
 
-class _WebViewPageState extends State<WebViewPage> {
+class _WebViewPageState extends State<WebViewPage>
+    with SingleTickerProviderStateMixin {
   bool isLoading = true;
   int progress = 0;
   InAppWebViewController? _controller;
+
+  late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
     _requestPermissions();
+
+    // controller animasi untuk gradasi berjalan
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 3))
+          ..repeat();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> _requestPermissions() async {
@@ -32,7 +46,7 @@ class _WebViewPageState extends State<WebViewPage> {
       Permission.camera,
       Permission.photos,
       Permission.storage,
-      Permission.location, // ✅ tambahin juga lokasi
+      Permission.location,
     ].request();
   }
 
@@ -48,20 +62,40 @@ class _WebViewPageState extends State<WebViewPage> {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3),
+          preferredSize: const Size.fromHeight(4),
           child: progress < 100
-              ? ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [Colors.red, Colors.green, Colors.blue],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ).createShader(bounds),
-                  child: LinearProgressIndicator(
-                    value: progress / 100,
-                    backgroundColor: Colors.transparent,
-                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                    minHeight: 3,
-                  ),
+              ? AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) {
+                    return ShaderMask(
+                      shaderCallback: (bounds) {
+                        return LinearGradient(
+                          colors: const [
+                            Colors.red,
+                            Colors.orange,
+                            Colors.yellow,
+                            Colors.green,
+                            Colors.cyan,
+                            Colors.blue,
+                            Colors.indigo,
+                            Colors.purple,
+                            Colors.pink,
+                          ],
+                          begin: Alignment(
+                              -1 + _animationController.value * 2, 0),
+                          end: Alignment(1 + _animationController.value * 2, 0),
+                          tileMode: TileMode.mirror,
+                        ).createShader(bounds);
+                      },
+                      child: LinearProgressIndicator(
+                        value: progress / 100,
+                        backgroundColor: Colors.transparent,
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Colors.white),
+                        minHeight: 4,
+                      ),
+                    );
+                  },
                 )
               : const SizedBox.shrink(),
         ),

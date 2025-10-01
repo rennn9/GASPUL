@@ -45,17 +45,14 @@ final layananData = {
       {
         "title": "Cuti",
         "icon": "assets/images/Logo Cuti.png",
-        "link": "https://cuti.gaspul.com"
       },
       {
         "title": "RKB",
         "icon": "assets/images/Logo RKB.png",
-        "link": "https://lkbkanwil.gaspul.com"
       },
       {
         "title": "BMN Kanwil",
         "icon": "assets/images/logo_gaspul.png",
-        "link": "https://bmnkanwil.gaspul.com"
       },
     ],
   },
