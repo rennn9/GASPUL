@@ -24,9 +24,8 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: theme.brightness == Brightness.dark
-          ? theme
-                .scaffoldBackgroundColor // ✅ High Contrast → hitam
-          : AppColors.primary, // ✅ Normal → hijau tua
+          ? AppColors.homeBackgroundHighContrast
+          : AppColors.homeBackgroundNormal,
       body: Stack(
         children: [
           Column(
@@ -92,18 +91,18 @@ class HomeScreen extends ConsumerWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              height: 40, // bisa diatur sesuai kebutuhan
+              height: 40,
               decoration: BoxDecoration(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey[800]  // abu-abu gelap saat high contrast
-                    : Colors.white,      // putih saat normal
+                color: theme.brightness == Brightness.dark
+                    ? AppColors.homeBottomBarHighContrast
+                    : AppColors.homeBottomBarNormal,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(80),
                   topRight: Radius.circular(80),
                 ),
                 boxShadow: const [
                   BoxShadow(
-                    color: Colors.black26,
+                    color: AppColors.homeBottomBarShadow,
                     blurRadius: 6,
                     offset: Offset(0, -2),
                   ),
@@ -114,12 +113,11 @@ class HomeScreen extends ConsumerWidget {
 
           // 🔹 Tombol Kemenag (nongol setengah)
           Positioned(
-            bottom: 8, // jarak dari bawah → setengah tombol keluar
+            bottom: 8,
             left: 0,
             right: 0,
-            child: Center(
-              child:
-                  KemenagButton(), // ukuran tombol tetap, tidak terpengaruh bar
+            child: const Center(
+              child: KemenagButton(),
             ),
           ),
 

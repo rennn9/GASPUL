@@ -33,10 +33,12 @@ class ServicePage extends ConsumerWidget {
         (layananConfig["items"] as List?)?.cast<Map<String, String>>() ?? [];
     final String layout = layananConfig["layout"] as String? ?? "grid";
 
-    final theme = Theme.of(context); // 🔹 ambil theme aktif
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.primaryColor,
+      backgroundColor: theme.brightness == Brightness.dark
+          ? AppColors.serviceHeaderBgHighContrast
+          : AppColors.serviceHeaderBg,
       body: Stack(
         children: [
           Column(
@@ -44,7 +46,11 @@ class ServicePage extends ConsumerWidget {
               // 🔹 Header
               Container(
                 height: 200,
-                decoration: BoxDecoration(color: theme.primaryColor),
+                decoration: BoxDecoration(
+                  color: theme.brightness == Brightness.dark
+                      ? AppColors.serviceHeaderBgHighContrast
+                      : AppColors.serviceHeaderBg,
+                ),
                 child: Stack(
                   children: [
                     // 🔹 Tombol kembali
@@ -57,14 +63,14 @@ class ServicePage extends ConsumerWidget {
                           width: 40,
                           height: 40,
                           decoration: const BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.serviceBackButtonBg,
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.arrow_back,
                             color: theme.brightness == Brightness.dark
-                                ? Colors.black
-                                : AppColors.primary,
+                                ? AppColors.serviceBackButtonIconHighContrast
+                                : AppColors.serviceBackButtonIconNormal,
                           ),
                         ),
                       ),
@@ -105,7 +111,7 @@ class ServicePage extends ConsumerWidget {
               // 🔹 Konten layanan
               Expanded(
                 child: Container(
-                  margin: const EdgeInsets.all(0),
+                  margin: EdgeInsets.zero,
                   padding: const EdgeInsets.only(
                     left: 20,
                     right: 20,
@@ -117,11 +123,11 @@ class ServicePage extends ConsumerWidget {
                       topLeft: Radius.circular(32),
                       topRight: Radius.circular(32),
                     ),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: AppColors.serviceCardShadow,
                         blurRadius: 8,
-                        offset: const Offset(0, 4),
+                        offset: Offset(0, 4),
                       ),
                     ],
                   ),

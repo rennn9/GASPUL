@@ -2,7 +2,7 @@ name: gaspul
 description: "Gerakan Aktif Sistematis Pelayanan Unggul"
 publish_to: 'none'
 
-version: 1.0.0+2
+version: 1.0.0+4
 
 environment:
   sdk: ^3.8.1
@@ -17,7 +17,6 @@ dependencies:
   flutter_tts: ^3.7.0
   flutter_inappwebview: ^6.1.5
   file_picker: ^8.0.0
-  permission_handler: ^11.3.1
   lottie: ^3.1.2
 
 dev_dependencies:
@@ -85,3 +84,4 @@ flutter:
     - assets/images/Logo PDUM.png
     - assets/images/Logo GTK Madrasah.png
     - assets/lottie/Under_Maintenance.json
+    - assets/lottie/Speed.json

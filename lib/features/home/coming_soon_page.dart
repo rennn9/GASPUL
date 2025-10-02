@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:gaspul/core/theme/theme.dart';
 import 'package:gaspul/features/home/widgets/accessibility_provider.dart';
 
 class ComingSoonPage extends ConsumerWidget {
@@ -17,10 +18,10 @@ class ComingSoonPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           title,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: AppColors.comingSoonAppBarFg),
         ),
         backgroundColor: theme.primaryColor,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: AppColors.comingSoonAppBarFg),
       ),
       body: Center(
         child: Column(
@@ -54,14 +55,16 @@ class ComingSoonPage extends ConsumerWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
-                    color: highContrast ? Colors.white : Colors.transparent, // 🔹 efek stroke
+                    color: highContrast
+                        ? AppColors.comingSoonButtonBorder
+                        : Colors.transparent,
                     width: highContrast ? 2 : 0,
                   ),
                 ),
               ),
               child: const Text(
                 "Kembali",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: AppColors.comingSoonButtonText),
               ),
             ),
           ],
