@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const primary = Color(0xFF017787); // hijau tua
-  static const secondary = Color(0xFF05A4AD); // biru toska
+  static const primary = Color(0xFF0388A9);
+  static const secondary = Color(0xFFFB7C02);
   static const subtitle = Color(0xFFF5F5F5); // abu muda
 
   // 🔹 Warna tombol Kemenag
@@ -41,29 +41,32 @@ class AppColors {
 
 class AppTheme {
   // 🔹 Tema Light
-  static ThemeData lightTheme = ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: Brightness.light,
+static ThemeData lightTheme = ThemeData(
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: AppColors.primary,
+    brightness: Brightness.light,
+  ).copyWith(
+    secondary: AppColors.secondary, // ✅ Tambahkan ini
+  ),
+  scaffoldBackgroundColor: AppColors.subtitle,
+  textTheme: GoogleFonts.poppinsTextTheme().copyWith(
+    bodySmall: GoogleFonts.poppins(fontSize: 12),
+    bodyMedium: GoogleFonts.poppins(fontSize: 14),
+    bodyLarge: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+    titleMedium: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+    titleLarge: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
+  ),
+  appBarTheme: const AppBarTheme(elevation: 0),
+  cardTheme: const CardThemeData(
+    color: Colors.white,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+      side: BorderSide.none,
     ),
-    scaffoldBackgroundColor: AppColors.subtitle,
-    textTheme: GoogleFonts.poppinsTextTheme().copyWith(
-      bodySmall: GoogleFonts.poppins(fontSize: 12),
-      bodyMedium: GoogleFonts.poppins(fontSize: 14),
-      bodyLarge: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
-      titleMedium: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
-      titleLarge: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
-    ),
-    appBarTheme: const AppBarTheme(elevation: 0),
-    cardTheme: const CardThemeData(
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-        side: BorderSide.none,
-      ),
-      elevation: 2,
-    ),
-  );
+    elevation: 2,
+  ),
+);
+
 
   // 🔹 Tema High Contrast
   static ThemeData highContrastTheme = ThemeData(

@@ -1,21 +1,31 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'widgets/header.dart';
 import 'widgets/glass_container.dart';
 import 'widgets/menu_card.dart';
 import 'widgets/accessibility_menu.dart';
 import 'widgets/kemenag_button.dart';
+import 'widgets/queue_bottom_sheet.dart'; // ✅ Tambahkan ini
 import 'service_page.dart';
 import 'home_providers.dart';
-import 'package:gaspul/core/data/service_data.dart'; // ✅ ambil data layanan
-import 'package:gaspul/core/theme/theme.dart'; // ✅ AppColors
-import 'package:gaspul/features/home/webview_page.dart';
+import 'package:gaspul/core/data/service_data.dart';
+import 'package:gaspul/core/theme/theme.dart';
 import 'package:gaspul/core/routes/no_animation_route.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
+
+  void _showQueueBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return const QueueBottomSheet(); // ✅ tidak pakai onSelect
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +40,6 @@ class HomeScreen extends ConsumerWidget {
         children: [
           Column(
             children: [
-              // 🔹 Header
               const Header(),
 
               // 🔹 Grid dengan glass container di belakang
@@ -53,29 +62,17 @@ class HomeScreen extends ConsumerWidget {
                             title: data["title"],
                             subtitle: data["subtitle"],
                             imagePath: data["image"],
-
-                            // 🔹 Aksi klik card
                             onTap: () {
-                              if (key == "publik") {
-                                Navigator.of(context).push(
-                                  NoAnimationRoute(
-                                    builder: (context) => WebViewPage(
-                                      url: "https://gaspul.com/home",
-                                      title: "GASPUL",
-                                    ),
+                              // 🔸 Semua layanan, termasuk "publik", diarahkan ke ServicePage
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ServicePage(
+                                    layananKey: key,
+                                    title: data["title"],
                                   ),
-                                );
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ServicePage(
-                                      layananKey: key,
-                                      title: data["title"],
-                                    ),
-                                  ),
-                                );
-                              }
+                                ),
+                              );
                             },
                           );
                         }).toList(),
@@ -87,7 +84,7 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
 
-          // 🔹 Bar bawah responsive theme
+          // 🔹 Bar bawah
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -111,7 +108,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // 🔹 Tombol Kemenag (nongol setengah)
+          // 🔹 Tombol Kemenag
           Positioned(
             bottom: 8,
             left: 0,

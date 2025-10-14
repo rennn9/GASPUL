@@ -45,7 +45,7 @@ class MenuCard extends StatelessWidget {
                     title,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w900,
-                      color: colors.primary,
+                      color: colors.secondary, // ⬅️ GANTI ke secondary
                       height: 1.2,
                     ),
                     textAlign: TextAlign.center,

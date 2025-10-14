@@ -7,15 +7,11 @@ final layananData = {
     "image": "assets/images/Logo Pelayanan Publik.png",
     "layout": "list",
     "items": [
-      {"title": "Bagian Tata Usaha", "icon": "assets/images/Logo Bagian Tata Usaha.png"},
-      {"title": "Bidang Penyelenggaraan Haji dan Umrah", "icon": "assets/images/Logo Bidang Penyelenggaraan Haji dan Umrah.png"},
-      {"title": "Bidang Pendidikan Madrasah", "icon": "assets/images/Logo Bidang Pendidikan Madrasah.png"},
-      {"title": "Bidang Bimbingan Masyarakat Islam", "icon": "assets/images/Logo Bidang Bimbingan Masyarakat Islam.png"},
-      {"title": "Bimas Kristen", "icon": "assets/images/Logo Bimas Kristen.png"},
-      {"title": "Bimas Katolik", "icon": "assets/images/Logo Bimas Katolik.png"},
-      {"title": "Bimas Hindu", "icon": "assets/images/Logo Bimas Hindu.png"},
-      {"title": "Bimas Buddha", "icon": "assets/images/Logo Bimas Buddha.png"},
-    ],
+      { "title": "Ambil Antrian", "icon": "assets/images/Logo Ambil Antrian.png" },
+      { "title": "Cek Status Layanan", "icon": "assets/images/Logo Status Layanan.png", "link": "https://gaspul.com/pencarian" },
+      { "title": "GASPUL", "icon": "assets/images/logo_gaspul.png", "link": "https://gaspul.com/home"},
+      { "title": "Statistik Pelayanan", "icon": "assets/images/Logo Statistik Pelayanan.png" }
+    ]
   },
   "internal": {
     "title": "Layanan Internal",

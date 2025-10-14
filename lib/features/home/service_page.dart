@@ -16,17 +16,28 @@ import 'package:gaspul/features/forms/pengaduan_pelayanan_form.dart';
 // 🔹 Import Coming Soon Page
 import 'package:gaspul/features/home/coming_soon_page.dart';
 
+// ✅ Import Queue Bottom Sheet
+import 'package:gaspul/features/home/widgets/queue_bottom_sheet.dart';
+
 class ServicePage extends ConsumerWidget {
   final String layananKey; // 🔹 kunci data layanan (publik, internal, dll)
   final String title; // 🔹 judul di header
 
   const ServicePage({super.key, required this.layananKey, required this.title});
 
+  void _showQueueBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const QueueBottomSheet(),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isMenuOpen = ref.watch(accessibilityMenuProvider);
 
-    // 🔹 Ambil data layanan berdasarkan key
     final layananConfig =
         layananData[layananKey] as Map<String, dynamic>? ?? {};
     final List<Map<String, String>> layananList =
@@ -34,6 +45,43 @@ class ServicePage extends ConsumerWidget {
     final String layout = layananConfig["layout"] as String? ?? "grid";
 
     final theme = Theme.of(context);
+
+    void handleTap(Map<String, String> item) {
+      final title = item["title"];
+
+      if (title == "Ambil Antrian") {
+        // ✅ Panggil Bottom Sheet Antrian
+        _showQueueBottomSheet(context);
+      } else if (item["link"] != null) {
+        Navigator.of(context).push(
+          NoAnimationRoute(
+            builder: (context) => WebViewPage(
+              url: item["link"]!,
+              title: title!,
+            ),
+          ),
+        );
+      } else if (title == "Pengaduan Masyarakat") {
+        Navigator.of(context).push(
+          NoAnimationRoute(
+            builder: (context) => const PengaduanMasyarakatForm(),
+          ),
+        );
+      } else if (title == "Pengaduan Pelayanan") {
+        Navigator.of(context).push(
+          NoAnimationRoute(
+            builder: (context) => const PengaduanPelayananForm(),
+          ),
+        );
+      } else {
+        Navigator.of(context).push(
+          NoAnimationRoute(
+            builder: (context) =>
+                ComingSoonPage(title: title ?? "Fitur"),
+          ),
+        );
+      }
+    }
 
     return Scaffold(
       backgroundColor: theme.brightness == Brightness.dark
@@ -138,40 +186,7 @@ class ServicePage extends ConsumerWidget {
                             final item = layananList[index];
                             return AccessibleTap(
                               label: item["title"] ?? "",
-                              onTap: () {
-                                final title = item["title"];
-                                if (item["link"] != null) {
-                                  Navigator.of(context).push(
-                                    NoAnimationRoute(
-                                      builder: (context) => WebViewPage(
-                                        url: item["link"]!,
-                                        title: title!,
-                                      ),
-                                    ),
-                                  );
-                                } else if (title == "Pengaduan Masyarakat") {
-                                  Navigator.of(context).push(
-                                    NoAnimationRoute(
-                                      builder: (context) =>
-                                          const PengaduanMasyarakatForm(),
-                                    ),
-                                  );
-                                } else if (title == "Pengaduan Pelayanan") {
-                                  Navigator.of(context).push(
-                                    NoAnimationRoute(
-                                      builder: (context) =>
-                                          const PengaduanPelayananForm(),
-                                    ),
-                                  );
-                                } else {
-                                  Navigator.of(context).push(
-                                    NoAnimationRoute(
-                                      builder: (context) =>
-                                          ComingSoonPage(title: title ?? "Fitur"),
-                                    ),
-                                  );
-                                }
-                              },
+                              onTap: () => handleTap(item),
                               child: Card(
                                 margin: const EdgeInsets.symmetric(vertical: 8),
                                 child: Padding(
@@ -202,40 +217,7 @@ class ServicePage extends ConsumerWidget {
                             final item = layananList[index];
                             return AccessibleTap(
                               label: item["title"] ?? "",
-                              onTap: () {
-                                final title = item["title"];
-                                if (item["link"] != null) {
-                                  Navigator.of(context).push(
-                                    NoAnimationRoute(
-                                      builder: (context) => WebViewPage(
-                                        url: item["link"]!,
-                                        title: title!,
-                                      ),
-                                    ),
-                                  );
-                                } else if (title == "Pengaduan Masyarakat") {
-                                  Navigator.of(context).push(
-                                    NoAnimationRoute(
-                                      builder: (context) =>
-                                          const PengaduanMasyarakatForm(),
-                                    ),
-                                  );
-                                } else if (title == "Pengaduan Pelayanan") {
-                                  Navigator.of(context).push(
-                                    NoAnimationRoute(
-                                      builder: (context) =>
-                                          const PengaduanPelayananForm(),
-                                    ),
-                                  );
-                                } else {
-                                  Navigator.of(context).push(
-                                    NoAnimationRoute(
-                                      builder: (context) =>
-                                          ComingSoonPage(title: title ?? "Fitur"),
-                                    ),
-                                  );
-                                }
-                              },
+                              onTap: () => handleTap(item),
                               child: Card(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,

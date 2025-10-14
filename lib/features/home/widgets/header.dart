@@ -1,54 +1,61 @@
 import 'package:flutter/material.dart';
-import 'menu_button.dart'; // 🔹 Import MenuButton
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'menu_button.dart';
+import 'package:gaspul/core/theme/theme.dart';
+import 'package:gaspul/features/home/widgets/accessibility_provider.dart';
 
-class Header extends StatelessWidget {
-  final double topPadding;     // 🔹 padding atas untuk seluruh isi header
-  final double textTopMargin;  // 🔹 jarak teks dari logo
+class Header extends ConsumerWidget {
+  final double topPadding;
+  final double textTopMargin;
 
   const Header({
     super.key,
-    this.topPadding = 45,       // default padding atas
-    this.textTopMargin = 10,    // default jarak teks dari logo
+    this.topPadding = 45,
+    this.textTopMargin = 10,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme; // 🔹 ambil warna dari theme
-    final isHighContrast = Theme.of(context).brightness == Brightness.dark;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isHighContrast = ref.watch(accessibilityProvider).highContrast;
+
+    Widget backgroundImage = Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: const AssetImage("assets/images/Geometric Pattern.png"),
+          fit: BoxFit.cover,
+          colorFilter: isHighContrast
+              ? null
+              : const ColorFilter.mode(
+                  AppColors.primary,
+                  BlendMode.overlay,
+                ),
+        ),
+      ),
+    );
+
+    // 🔸 Jika TIDAK high contrast, bungkus dengan ShaderMask untuk efek fade
+    if (!isHighContrast) {
+      backgroundImage = ShaderMask(
+        shaderCallback: (Rect bounds) {
+          return const LinearGradient(
+            begin: Alignment.center,
+            end: Alignment.bottomCenter,
+            colors: [Colors.white, Colors.white, Colors.transparent],
+            stops: [0.0, 0.5, 1.0],
+          ).createShader(bounds);
+        },
+        blendMode: BlendMode.dstIn,
+        child: backgroundImage,
+      );
+    }
 
     return Stack(
       children: [
-        // 🔹 Background dengan gambar
-        Container(
+        SizedBox(
           width: double.infinity,
-          height: 200,
-          child: Stack(
-            children: [
-              // Gambar geometric
-              Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/Geometric Pattern.png"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              // Gradient fade hanya muncul saat normal
-              if (!isHighContrast)
-                Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Color(0xFF017787), // warna background hijau
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          height: 160,
+          child: backgroundImage,
         ),
 
         // 🔹 Tombol menu
@@ -67,7 +74,7 @@ class Header extends StatelessWidget {
             children: [
               Image.asset(
                 "assets/images/logo_gaspul.png",
-                height: 120,
+                height: 80,
               ),
               SizedBox(height: textTopMargin),
               Text(

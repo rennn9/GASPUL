@@ -1,12 +1,12 @@
-// lib/features/forms/pengaduan_pelayanan_form.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:file_picker/file_picker.dart'; // ✅ paket file picker
-import 'package:gaspul/features/home/home_providers.dart'; // akses popup menu
-import 'package:gaspul/features/home/widgets/menu_button.dart'; // tombol menu
-import 'package:gaspul/features/home/widgets/accessibility_menu.dart'; // popup accessibility
+import 'package:file_picker/file_picker.dart';
+import 'package:gaspul/features/home/home_providers.dart';
+import 'package:gaspul/features/home/widgets/menu_button.dart';
+import 'package:gaspul/features/home/widgets/accessibility_menu.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart'; // untuk Clipboard
 
 class PengaduanPelayananForm extends ConsumerStatefulWidget {
   const PengaduanPelayananForm({super.key});
@@ -20,7 +20,6 @@ class _PengaduanPelayananFormState
     extends ConsumerState<PengaduanPelayananForm> {
   final _formKey = GlobalKey<FormState>();
 
-  // controller untuk kolom
   final TextEditingController _namaController = TextEditingController();
   final TextEditingController _nipController = TextEditingController();
   final TextEditingController _penjelasanController = TextEditingController();
@@ -53,61 +52,84 @@ class _PengaduanPelayananFormState
     }
   }
 
-Future<void> _submitFormPelayanan() async {
-  if (!(_formKey.currentState?.validate() ?? false)) {
-    setState(() {}); // supaya error langsung tampil
-    return;
+  Future<void> _submitFormPelayanan() async {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      setState(() {}); // supaya error langsung tampil
+      return;
+    }
+
+    final url = Uri.parse('http://10.0.2.2:8000/api/pengaduan-pelayanan');
+    var request = http.MultipartRequest('POST', url);
+
+    request.fields['nama'] = _namaController.text;
+    request.fields['nip'] = _nipController.text;
+    request.fields['penjelasan'] = _penjelasanController.text;
+
+    if (_pickedFile != null) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'file',
+          _pickedFile!.bytes!,
+          filename: _pickedFile!.name,
+        ),
+      );
+    }
+
+    request.headers['Accept'] = 'application/json';
+
+    try {
+      final response = await request.send();
+      final respStr = await response.stream.bytesToString();
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Pengaduan pelayanan berhasil dikirim")),
+        );
+        _formKey.currentState?.reset();
+        setState(() {
+          _pickedFile = null;
+          _fileName = null;
+        });
+      } else {
+        _showErrorDialog(
+          "Gagal mengirim laporan",
+          "Status Code: ${response.statusCode}\nResponse: $respStr",
+        );
+      }
+    } catch (e, stackTrace) {
+      _showErrorDialog(
+        "Error saat mengirim laporan",
+        "$e\n\nStackTrace:\n$stackTrace",
+      );
+    }
   }
 
-  final url = Uri.parse('http://10.0.2.2:8000/api/pengaduan-pelayanan');
-
-  var request = http.MultipartRequest('POST', url);
-
-  // tambahkan field
-  request.fields['nama'] = _namaController.text;
-  request.fields['nip'] = _nipController.text;
-  request.fields['penjelasan'] = _penjelasanController.text;
-
-  // tambahkan file jika ada
-  if (_pickedFile != null) {
-    request.files.add(
-      http.MultipartFile.fromBytes(
-        'file',
-        _pickedFile!.bytes!,
-        filename: _pickedFile!.name,
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: SingleChildScrollView(
+          child: Text(message),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: message));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Error copied to clipboard")),
+              );
+            },
+            child: const Text("Copy"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Close"),
+          ),
+        ],
       ),
     );
   }
-
-  // ✅ Tambahkan header biar Laravel tau ini API
-  request.headers['Accept'] = 'application/json';
-
-  try {
-    final response = await request.send();
-
-    if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Pengaduan pelayanan berhasil dikirim")),
-      );
-
-      _formKey.currentState?.reset();
-      setState(() {
-        _pickedFile = null;
-        _fileName = null;
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal mengirim laporan: ${response.statusCode}")),
-      );
-    }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error: $e")),
-    );
-  }
-}
-
-
 
   @override
   void dispose() {
@@ -140,7 +162,6 @@ Future<void> _submitFormPelayanan() async {
               onChanged: () => setState(() {}),
               child: ListView(
                 children: [
-                  // 🔹 Nama
                   TextFormField(
                     controller: _namaController,
                     decoration: const InputDecoration(
@@ -153,8 +174,6 @@ Future<void> _submitFormPelayanan() async {
                     style: theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 16),
-
-                  // 🔹 NIK
                   TextFormField(
                     controller: _nipController,
                     decoration: const InputDecoration(
@@ -167,8 +186,6 @@ Future<void> _submitFormPelayanan() async {
                     style: theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 16),
-
-                  // 🔹 Penjelasan
                   TextFormField(
                     controller: _penjelasanController,
                     maxLines: 4,
@@ -184,8 +201,6 @@ Future<void> _submitFormPelayanan() async {
                     style: theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 16),
-
-                  // 🔹 Upload File
                   Row(
                     children: [
                       ElevatedButton(
@@ -214,8 +229,6 @@ Future<void> _submitFormPelayanan() async {
                     ],
                   ),
                   const SizedBox(height: 32),
-
-                  // 🔹 Tombol Kirim
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -240,8 +253,6 @@ Future<void> _submitFormPelayanan() async {
             ),
           ),
         ),
-
-        // 🔹 AccessibilityMenu overlay
         if (isMenuOpen)
           AccessibilityMenu(
             onClose: () {
