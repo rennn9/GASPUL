@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../widgets/pdf_popup.dart'; // import sudah benar
 
 class AntrianService {
-  static const String baseUrl = 'http://10.0.2.2:8000/api';
+  static const String baseUrl = 'http://192.168.1.21:8000/api';
 
   static bool _isJson(String str) {
     try {

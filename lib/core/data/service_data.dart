@@ -52,20 +52,59 @@ final layananData = {
       },
     ],
   },
-  "kabupaten": {
-    "title": "Layanan Kabupaten",
-    "subtitle": "Layanan Tingkat Daerah",
-    "image": "assets/images/Logo Layanan Kabupaten.png",
-    "layout": "grid",
-    "items": [
-      {"title": "Majene", "icon": "assets/images/Logo Kabupaten Majene.png"},
-      {"title": "Mamasa", "icon": "assets/images/Logo Kabupaten Mamasa.png"},
-      {"title": "Mamuju", "icon": "assets/images/Logo Kabupaten Mamuju.png"},
-      {"title": "Mamuju Tengah", "icon": "assets/images/Logo Kabupaten Mamuju Tengah.png"},
-      {"title": "Pasangkayu", "icon": "assets/images/Logo Kabupaten Pasangkayu.png"},
-      {"title": "Polewali Mandar", "icon": "assets/images/Logo Kabupaten Polewali Mandar.png"},
-    ],
-  },
+"kabupaten": {
+  "title": "Layanan Kabupaten",
+  "subtitle": "Layanan Tingkat Daerah",
+  "image": "assets/images/Logo Layanan Kabupaten.png",
+  "layout": "grid",
+  "items": [
+    {"title": "Majene", "icon": "assets/images/Logo Kabupaten Majene.png"},
+    {"title": "Mamasa", "icon": "assets/images/Logo Kabupaten Mamasa.png"},
+    {"title": "Mamuju", "icon": "assets/images/Logo Kabupaten Mamuju.png"},
+    {"title": "Mamuju Tengah", "icon": "assets/images/Logo Kabupaten Mamuju Tengah.png"},
+    {
+      "title": "Pasangkayu",
+      "icon": "assets/images/Logo Kabupaten Pasangkayu.png",
+      "nestedPage": "pasangkayuDetail" // <-- ini untuk page baru
+    },
+    {"title": "Polewali Mandar", "icon": "assets/images/Logo Kabupaten Polewali Mandar.png"},
+  ],
+},
+
+// Halaman baru untuk Pasangkayu
+"pasangkayuDetail": {
+  "title": "Pasangkayu",
+  "subtitle": "Layanan Kabupaten Pasangkayu",
+  "image": "assets/images/Logo Kabupaten Pasangkayu.png",
+  "layout": "grid",
+  "items": [
+    {
+      "title": "KANKEMENAG PASANGKAYU",
+      "icon": "assets/images/Logo KEMENAG.png",
+      "link": "https://kemenagpasangkayu.id/"
+    },
+    {
+      "title": "DILAYANI SIGA'",
+      "icon": "assets/images/Logo KEMENAG.png",
+      "nestedPage": "sigaPasangkayu"
+    },
+  ],
+},
+
+// Halaman nested lagi untuk SIGA’ Pasangkayu
+"sigaPasangkayu": {
+  "title": "DILAYANI SIGA'",
+  "subtitle": "Layanan Cuti",
+  "image": "assets/images/Logo KEMENAG.png",
+  "layout": "grid",
+  "items": [
+    {
+      "title": "Layanan Cuti",
+      "icon": "assets/images/Logo Cuti.png",
+      "link": "https://kemenagpasangkayu.id/cuti/login"
+    },
+  ],
+},
 "pendidikan": {
   "title": "Layanan Pendidikan",
   "subtitle": "Layanan Pendidikan",
@@ -146,14 +185,6 @@ final layananData = {
         "title": "LAPOR",
         "icon": "assets/images/logo LAPOR.png",
         "link": "https://prod.lapor.go.id/"
-      },
-      {
-        "title": "Pengaduan Masyarakat",
-        "icon": "assets/images/Logo Pengaduan Masyarakat.png"
-      },
-      {
-        "title": "Pengaduan Pelayanan",
-        "icon": "assets/images/Logo Pengaduan Pelayanan.png"
       },
     ],
   },

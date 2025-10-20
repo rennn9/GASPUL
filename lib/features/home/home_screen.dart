@@ -6,7 +6,7 @@ import 'widgets/glass_container.dart';
 import 'widgets/menu_card.dart';
 import 'widgets/accessibility_menu.dart';
 import 'widgets/kemenag_button.dart';
-import 'widgets/queue_bottom_sheet.dart'; // ✅ Tambahkan ini
+import 'widgets/queue_bottom_sheet.dart';
 import 'service_page.dart';
 import 'home_providers.dart';
 import 'package:gaspul/core/data/service_data.dart';
@@ -22,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
       isScrollControlled: false,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return const QueueBottomSheet(); // ✅ tidak pakai onSelect
+        return const QueueBottomSheet();
       },
     );
   }
@@ -31,6 +31,17 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isMenuOpen = ref.watch(accessibilityMenuProvider);
     final theme = Theme.of(context);
+
+    // ✅ Hanya kategori utama yang ditampilkan di homescreen
+    final kategoriUtama = [
+      "publik",
+      "internal",
+      "kabupaten",
+      "pendidikan",
+      "kua",
+      "rubrik",
+      "pengaduan",
+    ];
 
     return Scaffold(
       backgroundColor: theme.brightness == Brightness.dark
@@ -54,16 +65,14 @@ class HomeScreen extends ConsumerWidget {
                         crossAxisCount: 2,
                         crossAxisSpacing: 8,
                         mainAxisSpacing: 16,
-                        children: layananData.entries.map((entry) {
-                          final key = entry.key;
-                          final data = entry.value as Map<String, dynamic>;
+                        children: kategoriUtama.map((key) {
+                          final data = layananData[key] as Map<String, dynamic>;
 
                           return MenuCard(
                             title: data["title"],
                             subtitle: data["subtitle"],
                             imagePath: data["image"],
                             onTap: () {
-                              // 🔸 Semua layanan, termasuk "publik", diarahkan ke ServicePage
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

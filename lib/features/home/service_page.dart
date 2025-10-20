@@ -1,87 +1,30 @@
+// lib/features/home/service_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gaspul/core/data/service_data.dart'; // 🔹 data layanan
+import 'package:gaspul/core/data/service_data.dart';
 import 'widgets/menu_button.dart';
 import 'widgets/accessibility_menu.dart';
 import 'home_providers.dart';
 import 'package:gaspul/core/theme/theme.dart';
-import 'package:gaspul/core/widgets/accessible_tap.dart'; // 🔹 TTS wrapper
-import 'webview_page.dart';
-import 'package:gaspul/core/routes/no_animation_route.dart'; // 🔹 no-animation route
-
-// 🔹 Import form pages
-import 'package:gaspul/features/forms/pengaduan_masyarakat_form.dart';
-import 'package:gaspul/features/forms/pengaduan_pelayanan_form.dart';
-
-// 🔹 Import Coming Soon Page
-import 'package:gaspul/features/home/coming_soon_page.dart';
-
-// ✅ Import Queue Bottom Sheet
-import 'package:gaspul/features/home/widgets/queue_bottom_sheet.dart';
+import 'package:gaspul/core/widgets/accessible_tap.dart';
+import 'package:gaspul/core/routes/service_navigator.dart'; // ✅ tambahkan import baru
 
 class ServicePage extends ConsumerWidget {
-  final String layananKey; // 🔹 kunci data layanan (publik, internal, dll)
-  final String title; // 🔹 judul di header
+  final String layananKey;
+  final String title;
 
   const ServicePage({super.key, required this.layananKey, required this.title});
-
-  void _showQueueBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const QueueBottomSheet(),
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isMenuOpen = ref.watch(accessibilityMenuProvider);
 
-    final layananConfig =
-        layananData[layananKey] as Map<String, dynamic>? ?? {};
+    final layananConfig = layananData[layananKey] as Map<String, dynamic>? ?? {};
     final List<Map<String, String>> layananList =
         (layananConfig["items"] as List?)?.cast<Map<String, String>>() ?? [];
     final String layout = layananConfig["layout"] as String? ?? "grid";
 
     final theme = Theme.of(context);
-
-    void handleTap(Map<String, String> item) {
-      final title = item["title"];
-
-      if (title == "Ambil Antrian") {
-        // ✅ Panggil Bottom Sheet Antrian
-        _showQueueBottomSheet(context);
-      } else if (item["link"] != null) {
-        Navigator.of(context).push(
-          NoAnimationRoute(
-            builder: (context) => WebViewPage(
-              url: item["link"]!,
-              title: title!,
-            ),
-          ),
-        );
-      } else if (title == "Pengaduan Masyarakat") {
-        Navigator.of(context).push(
-          NoAnimationRoute(
-            builder: (context) => const PengaduanMasyarakatForm(),
-          ),
-        );
-      } else if (title == "Pengaduan Pelayanan") {
-        Navigator.of(context).push(
-          NoAnimationRoute(
-            builder: (context) => const PengaduanPelayananForm(),
-          ),
-        );
-      } else {
-        Navigator.of(context).push(
-          NoAnimationRoute(
-            builder: (context) =>
-                ComingSoonPage(title: title ?? "Fitur"),
-          ),
-        );
-      }
-    }
 
     return Scaffold(
       backgroundColor: theme.brightness == Brightness.dark
@@ -101,7 +44,7 @@ class ServicePage extends ConsumerWidget {
                 ),
                 child: Stack(
                   children: [
-                    // 🔹 Tombol kembali
+                    // 🔙 Tombol kembali
                     Positioned(
                       top: 40,
                       left: 20,
@@ -124,10 +67,10 @@ class ServicePage extends ConsumerWidget {
                       ),
                     ),
 
-                    // 🔹 Tombol Menu
+                    // 🔸 Tombol Menu
                     const Positioned(top: 40, right: 20, child: MenuButton()),
 
-                    // 🔹 Isi header
+                    // 📝 Isi header
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Padding(
@@ -156,15 +99,10 @@ class ServicePage extends ConsumerWidget {
                 ),
               ),
 
-              // 🔹 Konten layanan
+              // 📄 Konten
               Expanded(
                 child: Container(
-                  margin: EdgeInsets.zero,
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                    bottom: 16,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
                     borderRadius: const BorderRadius.only(
@@ -186,7 +124,7 @@ class ServicePage extends ConsumerWidget {
                             final item = layananList[index];
                             return AccessibleTap(
                               label: item["title"] ?? "",
-                              onTap: () => handleTap(item),
+                              onTap: () => navigateFromServiceItem(context, item), // ✅
                               child: Card(
                                 margin: const EdgeInsets.symmetric(vertical: 8),
                                 child: Padding(
@@ -217,7 +155,7 @@ class ServicePage extends ConsumerWidget {
                             final item = layananList[index];
                             return AccessibleTap(
                               label: item["title"] ?? "",
-                              onTap: () => handleTap(item),
+                              onTap: () => navigateFromServiceItem(context, item), // ✅
                               child: Card(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -231,10 +169,9 @@ class ServicePage extends ConsumerWidget {
                                     Text(
                                       item["title"] ?? "",
                                       textAlign: TextAlign.center,
-                                      style: theme.textTheme.bodyLarge
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w900,
-                                          ),
+                                      style: theme.textTheme.bodyLarge?.copyWith(
+                                        fontWeight: FontWeight.w900,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -247,7 +184,7 @@ class ServicePage extends ConsumerWidget {
             ],
           ),
 
-          // 🔹 Popup Accessibility Menu
+          // ♿ Accessibility Menu
           if (isMenuOpen)
             AccessibilityMenu(
               onClose: () {
