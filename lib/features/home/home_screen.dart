@@ -12,6 +12,7 @@ import 'home_providers.dart';
 import 'package:gaspul/core/data/service_data.dart';
 import 'package:gaspul/core/theme/theme.dart';
 import 'package:gaspul/core/routes/no_animation_route.dart';
+import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -32,7 +33,6 @@ class HomeScreen extends ConsumerWidget {
     final isMenuOpen = ref.watch(accessibilityMenuProvider);
     final theme = Theme.of(context);
 
-    // ✅ Hanya kategori utama yang ditampilkan di homescreen
     final kategoriUtama = [
       "publik",
       "internal",
@@ -43,7 +43,7 @@ class HomeScreen extends ConsumerWidget {
       "pengaduan",
     ];
 
-    return Scaffold(
+    return GasPulSafeScaffold(
       backgroundColor: theme.brightness == Brightness.dark
           ? AppColors.homeBackgroundHighContrast
           : AppColors.homeBackgroundNormal,
@@ -53,10 +53,9 @@ class HomeScreen extends ConsumerWidget {
             children: [
               const Header(),
 
-              // 🔹 Grid dengan glass container di belakang
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 48),
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 48),
                   child: Stack(
                     children: [
                       const GlassContainer(),
@@ -93,7 +92,7 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
 
-          // 🔹 Bar bawah
+          // Bar bawah
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -117,7 +116,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // 🔹 Tombol Kemenag
+          // Tombol Kemenag
           Positioned(
             bottom: 8,
             left: 0,
@@ -127,7 +126,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // 🔹 Popup Accessibility Menu
+          // Popup Accessibility Menu
           if (isMenuOpen)
             AccessibilityMenu(
               onClose: () {

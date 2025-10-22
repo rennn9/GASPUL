@@ -1,4 +1,3 @@
-// lib/features/home/service_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaspul/core/data/service_data.dart';
@@ -7,7 +6,8 @@ import 'widgets/accessibility_menu.dart';
 import 'home_providers.dart';
 import 'package:gaspul/core/theme/theme.dart';
 import 'package:gaspul/core/widgets/accessible_tap.dart';
-import 'package:gaspul/core/routes/service_navigator.dart'; // ✅ tambahkan import baru
+import 'package:gaspul/core/routes/service_navigator.dart';
+import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart'; // ✅ pakai safe scaffold
 
 class ServicePage extends ConsumerWidget {
   final String layananKey;
@@ -26,7 +26,7 @@ class ServicePage extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    return Scaffold(
+    return GasPulSafeScaffold(
       backgroundColor: theme.brightness == Brightness.dark
           ? AppColors.serviceHeaderBgHighContrast
           : AppColors.serviceHeaderBg,
@@ -102,7 +102,7 @@ class ServicePage extends ConsumerWidget {
               // 📄 Konten
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
                     borderRadius: const BorderRadius.only(
@@ -124,7 +124,7 @@ class ServicePage extends ConsumerWidget {
                             final item = layananList[index];
                             return AccessibleTap(
                               label: item["title"] ?? "",
-                              onTap: () => navigateFromServiceItem(context, item), // ✅
+                              onTap: () => navigateFromServiceItem(context, item),
                               child: Card(
                                 margin: const EdgeInsets.symmetric(vertical: 8),
                                 child: Padding(
@@ -155,7 +155,7 @@ class ServicePage extends ConsumerWidget {
                             final item = layananList[index];
                             return AccessibleTap(
                               label: item["title"] ?? "",
-                              onTap: () => navigateFromServiceItem(context, item), // ✅
+                              onTap: () => navigateFromServiceItem(context, item),
                               child: Card(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,

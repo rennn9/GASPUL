@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gaspul/features/home/home_screen.dart';
 
 class SplashSecond extends StatefulWidget {
@@ -17,82 +18,87 @@ class _SplashSecondState extends State<SplashSecond>
   void initState() {
     super.initState();
 
-    // Animasi fade-in logo
+    // Fullscreen mode sebelum build pertama
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
     _controller.forward();
 
-    // Navigasi ke HomeScreen setelah 3 detik
+    // Navigasi ke HomeScreen
     Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      }
+      if (!mounted) return;
+
+      // Kembalikan UI normal sebelum masuk HomeScreen
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => const HomeScreen(),
+          transitionDuration: Duration.zero, // transisi langsung
+        ),
+      );
     });
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-    body: Stack(
-      children: [
-        // Pattern atas
-        Align(
-          alignment: Alignment.topCenter,
-          child: Image.asset(
-            'assets/images/Pattern Down.png',
-            fit: BoxFit.fitWidth,
-          ),
-        ),
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
-        // Pattern bawah
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Image.asset(
-            'assets/images/Pattern Up.png',
-            fit: BoxFit.fitWidth,
-          ),
-        ),
-
-        // Logo GASPUL di tengah dengan animasi fade
-        Center(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
             child: Image.asset(
-              'assets/images/logo_gaspul.png',
-              height: 120, // bisa disesuaikan
+              'assets/images/Pattern Down.png',
+              fit: BoxFit.fitWidth,
             ),
           ),
-        ),
-
-        // Copyright di bawah
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 24), // jarak dari bawah
-            child: Text(
-              '© 2025 SISTEM INFORMASI DAN DATA',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Image.asset(
+              'assets/images/Pattern Up.png',
+              fit: BoxFit.fitWidth,
+            ),
+          ),
+          Center(
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Image.asset(
+                'assets/images/logo_gaspul.png',
+                height: 120,
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: Text(
+                '© 2025 SISTEM INFORMASI DAN DATA',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

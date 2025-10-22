@@ -1,19 +1,21 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:pdfx/pdfx.dart'; // 👈 ini tetap untuk PdfViewPinch
+import 'package:pdfx/pdfx.dart'; // 👈 PdfViewPinch
 import 'package:http/http.dart' as http;
 import 'package:printing/printing.dart';
 import 'package:path/path.dart' as p;
-import 'package:pdf/pdf.dart' as pw; // 👈 pakai alias 'pw' untuk hindari bentrok PdfDocument
+import 'package:pdf/pdf.dart' as pw; // alias pw untuk PdfDocument
 
 class PdfPopup extends StatefulWidget {
   final String pdfUrl;
   final String nomor;
+  final double popupHeightFactor; // ✨ 0.0 - 1.0, default 0.75
 
   const PdfPopup({
     super.key,
     required this.pdfUrl,
     required this.nomor,
+    this.popupHeightFactor = 0.75,
   });
 
   @override
@@ -70,7 +72,7 @@ class _PdfPopupState extends State<PdfPopup> {
     if (pdfData == null) return;
 
     try {
-      final backendFileName = p.basename(widget.pdfUrl); // contoh: 2025-10-14-016.pdf
+      final backendFileName = p.basename(widget.pdfUrl);
 
       // Parse tanggal & nomor dari nama file backend
       String tanggal = '';
@@ -84,16 +86,15 @@ class _PdfPopupState extends State<PdfPopup> {
 
       final fileName = 'tiket-antrian-$nomor-tgl-$tanggal.pdf';
 
-      // ✅ Ukuran government letter dalam point (1 inch = 72 pt)
       const double inch = 72.0;
       final pw.PdfPageFormat governmentLetterLandscape = pw.PdfPageFormat(
-        8 * inch,     // lebar 8 inch
-        10.5 * inch,  // tinggi 10.5 inch
-      ).landscape;    // orientasi landscape
+        8 * inch,
+        10.5 * inch,
+      ).landscape;
 
       await Printing.layoutPdf(
         name: fileName,
-        format: governmentLetterLandscape, // ✅ atur format di sini
+        format: governmentLetterLandscape,
         onLayout: (_) => pdfData!,
       );
     } catch (e) {
@@ -112,35 +113,9 @@ class _PdfPopupState extends State<PdfPopup> {
       insetPadding: const EdgeInsets.all(16),
       child: SizedBox(
         width: double.infinity,
-        height: MediaQuery.of(context).size.height * 0.75,
+        height: MediaQuery.of(context).size.height * widget.popupHeightFactor,
         child: Column(
           children: [
-            // 🟦 Header
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: primaryColor,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Tiket Antrian #${widget.nomor}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-            ),
-
             // 📄 PDF Viewer / Loading / Error
             Expanded(
               child: loading
@@ -148,7 +123,7 @@ class _PdfPopupState extends State<PdfPopup> {
                   : pdfData != null
                       ? PdfViewPinch(
                           controller: PdfControllerPinch(
-                            document: PdfDocument.openData(pdfData!), // ini milik pdfx
+                            document: PdfDocument.openData(pdfData!),
                           ),
                         )
                       : Center(
@@ -159,18 +134,45 @@ class _PdfPopupState extends State<PdfPopup> {
                         ),
             ),
 
-            // 🖨 Tombol Print PDF
+            // ⚠️ Peringatan Save PDF
+            if (!loading && pdfData != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  '⚠️ Pastikan sudah menyimpan / print PDF sebelum menutup pop-up!',
+                  style: TextStyle(
+                    color: Colors.red.shade700,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
+            // 🖨 / ❌ Tombol di bawah
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton.icon(
                     onPressed: _printPdf,
                     icon: const Icon(Icons.print),
-                    label: const Text('Print / Save as PDF'),
+                    label: const Text('Print / Save PDF'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                    label: const Text('Tutup'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

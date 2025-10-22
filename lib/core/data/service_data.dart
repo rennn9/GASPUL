@@ -10,7 +10,8 @@ final layananData = {
       { "title": "Ambil Antrian", "icon": "assets/images/Logo Ambil Antrian.png" },
       { "title": "Cek Status Layanan", "icon": "assets/images/Logo Status Layanan.png", "link": "https://gaspul.com/pencarian" },
       { "title": "GASPUL", "icon": "assets/images/logo_gaspul.png", "link": "https://gaspul.com/home"},
-      { "title": "Statistik Pelayanan", "icon": "assets/images/Logo Statistik Pelayanan.png" }
+      { "title": "Statistik Pelayanan", "icon": "assets/images/Logo Statistik Pelayanan.png" },
+      { "title": "Layanan Konsultasi", "icon": "assets/images/Logo Layanan Konsultasi.png" },
     ]
   },
   "internal": {

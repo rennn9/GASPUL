@@ -9,6 +9,7 @@ import 'package:gaspul/features/statistics/widgets/statistik_bar_chart.dart';
 import 'package:gaspul/features/statistics/widgets/statistik_table_card.dart';
 import 'package:gaspul/features/statistics/widgets/total_pelayanan_card.dart';
 import 'package:gaspul/features/home/widgets/main_app_bar.dart';
+import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart'; // ✅ panggil safe scaffold
 
 class StatistikPelayananPage extends StatefulWidget {
   const StatistikPelayananPage({super.key});
@@ -49,10 +50,9 @@ class _StatistikPelayananPageState extends State<StatistikPelayananPage> {
 
   Future<void> fetchStatistik() async {
     try {
-      final response = await http.get(
-        Uri.parse('http://192.168.1.21:8000/api/statistik-pelayanan'),
-      );
-
+final response = await http.get(
+  Uri.parse('http://192.168.1.21:8000/api/statistik-pelayanan'),
+);
       if (response.statusCode == 200) {
         final List<dynamic> fetched = json.decode(response.body);
         if (json.encode(fetched) != json.encode(statistik)) {
@@ -126,7 +126,7 @@ class _StatistikPelayananPageState extends State<StatistikPelayananPage> {
       (sum, item) => sum + (int.tryParse(item['selesai'].toString()) ?? 0),
     );
 
-    return Scaffold(
+    return GasPulSafeScaffold(
       appBar: const MainAppBar(title: 'Statistik Pelayanan'),
       body: loading
           ? const Center(child: CircularProgressIndicator())
@@ -139,7 +139,7 @@ class _StatistikPelayananPageState extends State<StatistikPelayananPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ✅ Card Total Pelayanan + Confetti di dalamnya
+                  // ✅ Card Total Pelayanan + Confetti
                   TweenAnimationBuilder<double>(
                     tween: Tween(
                       begin: 0,
@@ -162,20 +162,18 @@ class _StatistikPelayananPageState extends State<StatistikPelayananPage> {
                           ),
                           Positioned(
                             top: 24,
-                            left:
-                                MediaQuery.of(context).size.width / 2 -
-                                20, // posisikan ke tengah
+                            left: MediaQuery.of(context).size.width / 2 - 20,
                             child: IgnorePointer(
                               child: ConfettiWidget(
                                 confettiController: _confettiController,
                                 blastDirectionality:
                                     BlastDirectionality.directional,
-                                blastDirection: -pi / 2, // ke atas
-                                emissionFrequency: 0.05, // lebih jarang
-                                numberOfParticles: 2, // lebih sedikit
-                                maxBlastForce: 2, // jarak semburan maksimum
-                                minBlastForce: 1, // jarak semburan minimum
-                                gravity: 0.4, // partikel cepat jatuh
+                                blastDirection: -pi / 2,
+                                emissionFrequency: 0.05,
+                                numberOfParticles: 2,
+                                maxBlastForce: 2,
+                                minBlastForce: 1,
+                                gravity: 0.4,
                                 colors: const [
                                   Colors.green,
                                   Colors.blue,

@@ -2,10 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaspul/core/theme/theme.dart';
-import 'package:gaspul/features/home/splash_first.dart'; // ✅ splash page pertama
+import 'package:gaspul/features/home/splash_first.dart';
 import 'package:gaspul/features/home/widgets/accessibility_provider.dart';
+import 'package:intl/date_symbol_data_local.dart'; // <-- tambahkan
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 🔹 Inisialisasi locale Indonesia untuk DateFormat
+  await initializeDateFormatting('id', null);
+
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -35,8 +41,7 @@ class MyApp extends ConsumerWidget {
 
         return MediaQuery(
           data: mediaQuery.copyWith(
-            textScaleFactor: accessibility.largeText ? 0.8 : 0.7, 
-            // ✅ angka 1.3 bisa diganti sesuai kebutuhan
+            textScaleFactor: accessibility.largeText ? 0.8 : 0.7,
           ),
           child: child!,
         );
@@ -46,6 +51,7 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
+
 
 
 

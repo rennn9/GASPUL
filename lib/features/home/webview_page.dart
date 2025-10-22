@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:lottie/lottie.dart';
 import 'package:gaspul/core/services/tts_service.dart';
+import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart'; // ✅ import safe scaffold
 
 class WebViewPage extends StatefulWidget {
   final String url;
@@ -117,7 +118,6 @@ class _WebViewPageState extends State<WebViewPage>
         let deltaY = Math.abs(endY - startY);
         let deltaTime = endTime - startTime;
 
-        // jika jarak geser kecil dan waktu cukup singkat, dianggap tap
         if (deltaX < 10 && deltaY < 10 && deltaTime < 500) {
           let target = e.target;
           let text = '';
@@ -154,7 +154,7 @@ class _WebViewPageState extends State<WebViewPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GasPulSafeScaffold(
       appBar: _isAppBarVisible
           ? AppBar(
               title: Text(widget.title),
@@ -179,14 +179,14 @@ class _WebViewPageState extends State<WebViewPage>
                       child: Row(
                         children: [
                           Icon(
-                            _isHighContrast
-                                ? Icons.visibility
-                                : Icons.contrast,
+                            _isHighContrast ? Icons.visibility : Icons.contrast,
                           ),
                           const SizedBox(width: 8),
-                          Text(_isHighContrast
-                              ? 'Matikan Kontras Tinggi'
-                              : 'Mode Kontras Tinggi'),
+                          Text(
+                            _isHighContrast
+                                ? 'Matikan Kontras Tinggi'
+                                : 'Mode Kontras Tinggi',
+                          ),
                         ],
                       ),
                     ),
@@ -245,18 +245,18 @@ class _WebViewPageState extends State<WebViewPage>
                                   Colors.purple,
                                   Colors.pink,
                                 ],
-                                begin: Alignment(
-                                    -1 + _animationController.value * 2, 0),
-                                end: Alignment(
-                                    1 + _animationController.value * 2, 0),
+                                begin:
+                                    Alignment(-1 + _animationController.value * 2, 0),
+                                end:
+                                    Alignment(1 + _animationController.value * 2, 0),
                                 tileMode: TileMode.mirror,
                               ).createShader(bounds);
                             },
                             child: LinearProgressIndicator(
                               value: progress / 100,
                               backgroundColor: Colors.transparent,
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                  Colors.white),
+                              valueColor:
+                                  const AlwaysStoppedAnimation<Color>(Colors.white),
                               minHeight: 4,
                             ),
                           );
@@ -266,53 +266,35 @@ class _WebViewPageState extends State<WebViewPage>
               ),
             )
           : null,
-      body: SafeArea(
-        top: !_isAppBarVisible,
-        bottom: false,
-        child: Stack(
-          children: [
-            InAppWebView(
-              initialUrlRequest: URLRequest(url: WebUri(widget.url)),
-              onWebViewCreated: (controller) {
-                _controller = controller;
+      body: InAppWebView(
+        initialUrlRequest: URLRequest(url: WebUri(widget.url)),
+        onWebViewCreated: (controller) {
+          _controller = controller;
 
-                _controller!.addJavaScriptHandler(
-                  handlerName: 'onTapText',
-                  callback: (args) {
-                    if (args.isNotEmpty &&
-                        args[0].toString().trim().isNotEmpty) {
-                      String tappedText = args[0].toString();
-                      setState(() {
-                        _lastTappedText = tappedText;
-                      });
-                      if (_ttsModeActive) {
-                        TTSService().speak(tappedText);
-                      }
-                    }
-                  },
-                );
-              },
-              onLoadStop: (controller, url) async {
-                await _injectTapListener();
-              },
-              onProgressChanged: (controller, progressValue) {
+          _controller!.addJavaScriptHandler(
+            handlerName: 'onTapText',
+            callback: (args) {
+              if (args.isNotEmpty && args[0].toString().trim().isNotEmpty) {
+                String tappedText = args[0].toString();
                 setState(() {
-                  progress = progressValue;
-                  isLoading = progressValue < 100;
+                  _lastTappedText = tappedText;
                 });
-              },
-            ),
-            if (isLoading)
-              Center(
-                child: Lottie.asset(
-                  'assets/lottie/Speed.json',
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.contain,
-                ),
-              ),
-          ],
-        ),
+                if (_ttsModeActive) {
+                  TTSService().speak(tappedText);
+                }
+              }
+            },
+          );
+        },
+        onLoadStop: (controller, url) async {
+          await _injectTapListener();
+        },
+        onProgressChanged: (controller, progressValue) {
+          setState(() {
+            progress = progressValue;
+            isLoading = progressValue < 100;
+          });
+        },
       ),
       floatingActionButton: !_isAppBarVisible
           ? FloatingActionButton(

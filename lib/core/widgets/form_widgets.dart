@@ -8,6 +8,10 @@ class CustomTextFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final int maxLines;
   final TextInputType keyboardType;
+  final bool readOnly;
+  final Widget? suffixIcon;
+  final Color? backgroundColor; // ✅ untuk ubah warna bg
+  final String? helperText; // ✅ untuk helper text
 
   const CustomTextFormField({
     super.key,
@@ -16,13 +20,17 @@ class CustomTextFormField extends StatelessWidget {
     this.validator,
     this.maxLines = 1,
     this.keyboardType = TextInputType.text,
+    this.readOnly = false,
+    this.suffixIcon,
+    this.backgroundColor,
+    this.helperText,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isHighContrast = theme.brightness == Brightness.dark;
-    final inputBgColor = isHighContrast ? Colors.black : Colors.white;
+    final inputBgColor = backgroundColor ?? (isHighContrast ? Colors.black : Colors.white);
     final inputTextColor = theme.textTheme.bodyLarge!.color!;
     final inputBorderColor = isHighContrast ? Colors.white : Colors.grey[400]!;
 
@@ -30,12 +38,15 @@ class CustomTextFormField extends StatelessWidget {
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
+      readOnly: readOnly,
       style: theme.textTheme.bodyLarge!.copyWith(color: inputTextColor),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: theme.textTheme.bodyLarge!.copyWith(color: inputTextColor),
         filled: true,
         fillColor: inputBgColor,
+        suffixIcon: suffixIcon,
+        helperText: helperText, // ✅ helper text
         border: OutlineInputBorder(
           borderSide: BorderSide(color: inputBorderColor),
           borderRadius: BorderRadius.circular(12),
