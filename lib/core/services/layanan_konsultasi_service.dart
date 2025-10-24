@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path/path.dart' as Path;
 import 'package:gaspul/core/theme/theme.dart';
+import 'api_config.dart'; // <-- import ApiConfig
 
 class LayananKonsultasiService {
   final Dio _dio = Dio();
@@ -34,17 +35,16 @@ class LayananKonsultasiService {
             : null,
       });
 
-final response = await _dio.post(
-  "http://192.168.1.21:8000/api/konsultasi/store",
-  data: formData,
-  options: Options(
-    headers: {"Accept": "application/json"},
-    contentType: 'multipart/form-data',
-  ),
-);
+      final response = await _dio.post(
+        '${ApiConfig.baseUrl}/konsultasi/store', // <-- gunakan ApiConfig.baseUrl
+        data: formData,
+        options: Options(
+          headers: {"Accept": "application/json"},
+          contentType: 'multipart/form-data',
+        ),
+      );
 
-print("Response data: ${response.data}");
-
+      print("Response data: ${response.data}");
 
       if (response.statusCode == 200) {
         _clearFields(

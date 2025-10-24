@@ -1,15 +1,15 @@
+// lib/features/statistics/statistik_pelayanan_page.dart
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:confetti/confetti.dart';
 import 'package:gaspul/features/statistics/widgets/statistik_bar_chart.dart';
 import 'package:gaspul/features/statistics/widgets/statistik_table_card.dart';
 import 'package:gaspul/features/statistics/widgets/total_pelayanan_card.dart';
 import 'package:gaspul/features/home/widgets/main_app_bar.dart';
-import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart'; // ✅ panggil safe scaffold
+import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart';
+import 'package:gaspul/core/services/api_config.dart'; // <-- import ApiConfig
 
 class StatistikPelayananPage extends StatefulWidget {
   const StatistikPelayananPage({super.key});
@@ -25,15 +25,9 @@ class _StatistikPelayananPageState extends State<StatistikPelayananPage> {
   String? lastUpdated;
   Timer? _timer;
 
-  late ConfettiController _confettiController;
-  bool _hasPlayedConfetti = false;
-
   @override
   void initState() {
     super.initState();
-    _confettiController = ConfettiController(
-      duration: const Duration(seconds: 3),
-    );
     fetchStatistik();
     _timer = Timer.periodic(
       const Duration(seconds: 10),
@@ -44,23 +38,20 @@ class _StatistikPelayananPageState extends State<StatistikPelayananPage> {
   @override
   void dispose() {
     _timer?.cancel();
-    _confettiController.dispose();
     super.dispose();
   }
 
   Future<void> fetchStatistik() async {
     try {
-final response = await http.get(
-  Uri.parse('http://192.168.1.21:8000/api/statistik-pelayanan'),
-);
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/statistik-pelayanan'), // <-- pakai ApiConfig.baseUrl
+      );
       if (response.statusCode == 200) {
         final List<dynamic> fetched = json.decode(response.body);
         if (json.encode(fetched) != json.encode(statistik)) {
           setState(() {
             statistik = fetched;
-            lastUpdated = DateFormat(
-              'dd-MM-yyyy HH:mm:ss',
-            ).format(DateTime.now());
+            lastUpdated = DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.now());
             loading = false;
             error = null;
           });
@@ -81,31 +72,6 @@ final response = await http.get(
         loading = false;
       });
     }
-  }
-
-  Path drawStar(Size size) {
-    double degToRad(double deg) => deg * (pi / 180.0);
-    const numberOfPoints = 5;
-    final halfWidth = size.width / 2;
-    final externalRadius = halfWidth;
-    final internalRadius = halfWidth / 2.5;
-    final degreesPerStep = degToRad(360 / numberOfPoints);
-    final halfDegreesPerStep = degreesPerStep / 2;
-    final path = Path();
-    final fullAngle = degToRad(360);
-    path.moveTo(size.width, halfWidth);
-    for (double step = 0; step < fullAngle; step += degreesPerStep) {
-      path.lineTo(
-        halfWidth + externalRadius * cos(step),
-        halfWidth + externalRadius * sin(step),
-      );
-      path.lineTo(
-        halfWidth + internalRadius * cos(step + halfDegreesPerStep),
-        halfWidth + internalRadius * sin(step + halfDegreesPerStep),
-      );
-    }
-    path.close();
-    return path;
   }
 
   @override
@@ -131,91 +97,44 @@ final response = await http.get(
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : error != null
-          ? Center(
-              child: Text('❌ $error', style: const TextStyle(fontSize: 16)),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ✅ Card Total Pelayanan + Confetti
-                  TweenAnimationBuilder<double>(
-                    tween: Tween(
-                      begin: 0,
-                      end: totalPelayananBerhasil.toDouble(),
-                    ),
-                    duration: const Duration(seconds: 2),
-                    builder: (context, value, child) {
-                      if (!_hasPlayedConfetti &&
-                          value.toInt() >= totalPelayananBerhasil) {
-                        _confettiController.play();
-                        _hasPlayedConfetti = true;
-                      }
+              ? Center(
+                  child: Text('❌ $error', style: const TextStyle(fontSize: 16)),
+                )
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // ✅ Card Total Pelayanan
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: TotalPelayananCard(total: totalPelayananBerhasil),
+                      ),
+                      const SizedBox(height: 12),
 
-                      return Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: TotalPelayananCard(total: value.toInt()),
-                          ),
-                          Positioned(
-                            top: 24,
-                            left: MediaQuery.of(context).size.width / 2 - 20,
-                            child: IgnorePointer(
-                              child: ConfettiWidget(
-                                confettiController: _confettiController,
-                                blastDirectionality:
-                                    BlastDirectionality.directional,
-                                blastDirection: -pi / 2,
-                                emissionFrequency: 0.05,
-                                numberOfParticles: 2,
-                                maxBlastForce: 2,
-                                minBlastForce: 1,
-                                gravity: 0.4,
-                                colors: const [
-                                  Colors.green,
-                                  Colors.blue,
-                                  Colors.pink,
-                                  Colors.orange,
-                                  Colors.purple,
-                                ],
-                                createParticlePath: drawStar,
-                              ),
+                      // Chart
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: theme.cardColor,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Chart
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: StatistikBarChart(data: chartData),
-                  ),
+                        child: StatistikBarChart(data: chartData),
+                      ),
 
-                  // Tabel
-                  StatistikTableCard(
-                    data: statistik,
-                    lastUpdated: lastUpdated,
-                    animatedNumber: (int value) =>
-                        TweenAnimationBuilder<double>(
+                      // Tabel
+                      StatistikTableCard(
+                        data: statistik,
+                        lastUpdated: lastUpdated,
+                        animatedNumber: (int value) => TweenAnimationBuilder<double>(
                           tween: Tween(begin: 0, end: value.toDouble()),
                           duration: const Duration(seconds: 1),
                           builder: (context, val, child) {
@@ -225,10 +144,10 @@ final response = await http.get(
                             );
                           },
                         ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
     );
   }
 }
