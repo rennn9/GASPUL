@@ -46,15 +46,28 @@ class AntrianService {
           final nomor = result['nomor_antrian']?.toString() ?? '(Nomor tidak diketahui)';
 
           // ✅ Panggil PdfPopup
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => PdfPopup(
-              pdfUrl: pdfUrl,
-              nomor: nomor,
-              popupHeightFactor: popupHeightFactor,
-            ),
-          ).then((_) {
+showGeneralDialog(
+  context: context,
+  barrierLabel: "PDF Popup",
+  barrierDismissible: false,
+  barrierColor: Colors.black.withOpacity(0.6), // 🔹 Gelap transparan di belakang popup
+  pageBuilder: (context, anim1, anim2) {
+    return Center(
+      child: PdfPopup(
+        pdfUrl: pdfUrl,
+        nomor: nomor,
+        
+      ),
+    );
+  },
+  transitionBuilder: (context, anim1, anim2, child) {
+    return FadeTransition(
+      opacity: CurvedAnimation(parent: anim1, curve: Curves.easeOut),
+      child: child,
+    );
+  },
+  transitionDuration: const Duration(milliseconds: 200),
+).then((_) {
             // 🔹 setelah popup ditutup, reset form
             if (onSuccess != null) onSuccess();
           });
@@ -68,7 +81,7 @@ class AntrianService {
           builder: (_) => PdfPopup(
             pdfUrl: '',
             nomor: '(Nomor tidak diketahui)',
-            popupHeightFactor: popupHeightFactor,
+            
           ),
         ).then((_) {
           if (onSuccess != null) onSuccess();

@@ -9,6 +9,7 @@ import 'package:gaspul/core/widgets/form_widgets.dart';
 import 'package:gaspul/core/services/layanan_konsultasi_service.dart';
 import 'package:gaspul/core/services/server_time_service.dart';
 import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart';
+import 'package:lottie/lottie.dart';
 
 class LayananKonsultasiFormPage extends ConsumerStatefulWidget {
   const LayananKonsultasiFormPage({super.key});
@@ -24,6 +25,7 @@ class _LayananKonsultasiFormPageState
 
   final _nameController = TextEditingController();
   final _whatsappController = TextEditingController();
+  final _alamatController = TextEditingController(); // ✅ Tambahan
   final _emailController = TextEditingController();
   final _perihalController = TextEditingController();
   final _isiController = TextEditingController();
@@ -87,6 +89,7 @@ class _LayananKonsultasiFormPageState
       context: context,
       nameController: _nameController,
       whatsappController: _whatsappController,
+      alamatController: _alamatController, // ✅ dikirim ke service
       emailController: _emailController,
       perihalController: _perihalController,
       isiController: _isiController,
@@ -114,110 +117,146 @@ class _LayananKonsultasiFormPageState
         bottom: true,
         child: LayoutBuilder(
           builder: (context, constraints) {
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 24,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 32,
-              ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        CustomTextFormField(
-                          controller: _nameController,
-                          label: "Nama Lengkap *",
-                          validator: (v) =>
-                              v == null || v.isEmpty ? "Nama wajib diisi" : null,
-                        ),
-                        const SizedBox(height: 12),
-                        CustomTextFormField(
-                          controller: _whatsappController,
-                          label: "Nomor Whatsapp *",
-                          keyboardType: TextInputType.phone,
-                          validator: (v) => v == null || v.isEmpty
-                              ? "Nomor Whatsapp wajib diisi"
-                              : null,
-                        ),
-                        const SizedBox(height: 12),
-                        CustomTextFormField(
-                          controller: _emailController,
-                          label: "Email (Opsional)",
-                          keyboardType: TextInputType.emailAddress,
-                        ),
-                        const SizedBox(height: 12),
-                        CustomTextFormField(
-                          controller: _perihalController,
-                          label: "Perihal *",
-                          maxLines: 3,
-                          validator: (v) =>
-                              v == null || v.isEmpty ? "Perihal wajib diisi" : null,
-                        ),
-                        const SizedBox(height: 12),
-                        CustomTextFormField(
-                          controller: _isiController,
-                          label: "Isi Konsultasi *",
-                          maxLines: 3,
-                          validator: (v) => v == null || v.isEmpty
-                              ? "Isi konsultasi wajib diisi"
-                              : null,
-                        ),
-                        const SizedBox(height: 12),
-                        CustomTextFormField(
-                          controller: _tanggalController,
-                          label: "Tanggal Konsultasi",
-                          readOnly: true,
-                          suffixIcon: Tooltip(
-                            message: "Tanggal otomatis, tidak bisa diubah",
-                            child: const Icon(Icons.lock),
-                          ),
-                          backgroundColor: Colors.grey[200],
-                          helperText: "Tanggal otomatis, tidak bisa diubah",
-                        ),
-                        const SizedBox(height: 12),
-                        OutlinedButton.icon(
-                          onPressed: _pickFile,
-                          icon: const Icon(Icons.upload_file),
-                          label: Text(
-                            _selectedFile != null
-                                ? "File terpilih: ${_selectedFile!.path.split('/').last}"
-                                : "Upload File PDF (Opsional, Maks 3MB)",
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        _isLoading
-                            ? const Center(child: CircularProgressIndicator())
-                            : ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: theme.colorScheme.primary,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                onPressed: () => _submitForm(context),
-                                child: const Text(
-                                  "Kirim",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+            return Stack(
+              children: [
+                // 🌟 Form utama
+                SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    top: 24,
+                    bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            CustomTextFormField(
+                              controller: _nameController,
+                              label: "Nama Lengkap *",
+                              validator: (v) => v == null || v.isEmpty
+                                  ? "Nama wajib diisi"
+                                  : null,
+                            ),
+                            const SizedBox(height: 12),
+                            CustomTextFormField(
+                              controller: _whatsappController,
+                              label: "No. HP/WA *",
+                              keyboardType: TextInputType.phone,
+                              validator: (v) => v == null || v.isEmpty
+                                  ? "Nomor HP/WA wajib diisi"
+                                  : null,
+                            ),
+                            const SizedBox(height: 12),
+
+                            // ✅ Field Alamat baru
+                            CustomTextFormField(
+                              controller: _alamatController,
+                              label: "Alamat *",
+                              maxLines: 2,
+                              validator: (v) => v == null || v.isEmpty
+                                  ? "Alamat wajib diisi"
+                                  : null,
+                            ),
+                            const SizedBox(height: 12),
+
+                            CustomTextFormField(
+                              controller: _emailController,
+                              label: "Email (Opsional)",
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                            const SizedBox(height: 12),
+                            CustomTextFormField(
+                              controller: _perihalController,
+                              label: "Perihal *",
+                              maxLines: 3,
+                              validator: (v) => v == null || v.isEmpty
+                                  ? "Perihal wajib diisi"
+                                  : null,
+                            ),
+                            const SizedBox(height: 12),
+                            CustomTextFormField(
+                              controller: _isiController,
+                              label: "Isi Konsultasi *",
+                              maxLines: 3,
+                              validator: (v) => v == null || v.isEmpty
+                                  ? "Isi konsultasi wajib diisi"
+                                  : null,
+                            ),
+                            const SizedBox(height: 12),
+                            CustomTextFormField(
+                              controller: _tanggalController,
+                              label: "Tanggal Konsultasi",
+                              readOnly: true,
+                              suffixIcon: Tooltip(
+                                message: "Tanggal otomatis, tidak bisa diubah",
+                                child: const Icon(Icons.lock),
+                              ),
+                              backgroundColor: Colors.grey[200],
+                              helperText: "Tanggal otomatis, tidak bisa diubah",
+                            ),
+                            const SizedBox(height: 12),
+                            OutlinedButton.icon(
+                              onPressed: _pickFile,
+                              icon: const Icon(Icons.upload_file),
+                              label: Text(
+                                _selectedFile != null
+                                    ? "File terpilih: ${_selectedFile!.path.split('/').last}"
+                                    : "Upload File PDF (Opsional, Maks 3MB)",
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: theme.colorScheme.primary,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                        const SizedBox(height: 16),
-                      ],
+                              onPressed:
+                                  _isLoading ? null : () => _submitForm(context),
+                              child: const Text(
+                                "Kirim",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+
+                // 🌟 Overlay Lottie loading
+                if (_isLoading)
+                  Container(
+                    color: Colors.black45,
+                    child: Center(
+                      child: SizedBox(
+                        height: 150,
+                        width: 150,
+                        child: Lottie.asset(
+                          'assets/lottie/Speed.json',
+                          repeat: true,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             );
           },
         ),
@@ -229,6 +268,7 @@ class _LayananKonsultasiFormPageState
   void dispose() {
     _nameController.dispose();
     _whatsappController.dispose();
+    _alamatController.dispose(); // ✅ dispose tambahan
     _emailController.dispose();
     _perihalController.dispose();
     _isiController.dispose();

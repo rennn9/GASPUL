@@ -10,6 +10,7 @@
 #include <flutter_tts/flutter_tts_plugin.h>
 #include <pdfx/pdfx_plugin.h>
 #include <printing/printing_plugin.h>
+#include <url_launcher_windows/url_launcher_windows.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   FlutterInappwebviewWindowsPluginCApiRegisterWithRegistrar(
@@ -20,4 +21,6 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("PdfxPlugin"));
   PrintingPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("PrintingPlugin"));
+  UrlLauncherWindowsRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("UrlLauncherWindows"));
 }

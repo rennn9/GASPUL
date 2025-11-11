@@ -6,8 +6,7 @@ import 'package:gaspul/features/home/webview_page.dart';
 import 'package:gaspul/features/statistics/statistik_pelayanan_page.dart';
 import 'package:gaspul/features/home/widgets/queue_bottom_sheet.dart';
 import 'package:gaspul/features/home/service_page.dart';
-import 'package:gaspul/features/queue/layanan_konsultasi_form_page.dart';
-
+import 'package:gaspul/features/home/survey_page.dart';
 
 /// 🔹 Fungsi helper untuk navigasi berdasarkan item menu
 void navigateFromServiceItem(BuildContext context, Map<String, String> item) {
@@ -58,15 +57,15 @@ void navigateFromServiceItem(BuildContext context, Map<String, String> item) {
     return;
   }
 
-  // ✅ Buku Tamu
-  if (title == "Layanan Konsultasi") {
-    Navigator.of(context).push(
-      NoAnimationRoute(
-        builder: (context) => const LayananKonsultasiFormPage(),
-      ),
-    );
-    return;
-  }
+  if (title == "Survey Kepuasan Masyarakat") {
+  Navigator.of(context).push(
+    NoAnimationRoute(
+      builder: (context) => const SurveyPage(),
+    ),
+  );
+  return;
+}
+
 
   Navigator.of(context).push(
     NoAnimationRoute(

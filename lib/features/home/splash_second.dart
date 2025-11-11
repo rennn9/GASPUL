@@ -18,7 +18,6 @@ class _SplashSecondState extends State<SplashSecond>
   void initState() {
     super.initState();
 
-    // Fullscreen mode sebelum build pertama
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     _controller = AnimationController(
@@ -32,17 +31,15 @@ class _SplashSecondState extends State<SplashSecond>
 
     _controller.forward();
 
-    // Navigasi ke HomeScreen
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
 
-      // Kembalikan UI normal sebelum masuk HomeScreen
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (_, __, ___) => const HomeScreen(),
-          transitionDuration: Duration.zero, // transisi langsung
+          transitionDuration: Duration.zero,
         ),
       );
     });
@@ -56,24 +53,32 @@ class _SplashSecondState extends State<SplashSecond>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final bool isLandscape = size.width > size.height;
+    final bool isShortHeight = size.height < 400; // misal batas minimum
+
+    final showPatterns = !(isLandscape || isShortHeight);
+
     return Material(
       color: Colors.white,
       child: Stack(
         children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: Image.asset(
-              'assets/images/Pattern Down.png',
-              fit: BoxFit.fitWidth,
+          if (showPatterns)
+            Align(
+              alignment: Alignment.topCenter,
+              child: Image.asset(
+                'assets/images/Pattern Down.png',
+                fit: BoxFit.fitWidth,
+              ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Image.asset(
-              'assets/images/Pattern Up.png',
-              fit: BoxFit.fitWidth,
+          if (showPatterns)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Image.asset(
+                'assets/images/Pattern Up.png',
+                fit: BoxFit.fitWidth,
+              ),
             ),
-          ),
           Center(
             child: FadeTransition(
               opacity: _fadeAnimation,

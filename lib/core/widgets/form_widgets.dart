@@ -10,8 +10,9 @@ class CustomTextFormField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool readOnly;
   final Widget? suffixIcon;
-  final Color? backgroundColor; // ✅ untuk ubah warna bg
-  final String? helperText; // ✅ untuk helper text
+  final Color? backgroundColor;
+  final String? helperText;
+  final void Function(String)? onFieldSubmitted; // ✅ Tambahkan
 
   const CustomTextFormField({
     super.key,
@@ -24,6 +25,7 @@ class CustomTextFormField extends StatelessWidget {
     this.suffixIcon,
     this.backgroundColor,
     this.helperText,
+    this.onFieldSubmitted, // ✅ Tambahkan
   });
 
   @override
@@ -46,16 +48,18 @@ class CustomTextFormField extends StatelessWidget {
         filled: true,
         fillColor: inputBgColor,
         suffixIcon: suffixIcon,
-        helperText: helperText, // ✅ helper text
+        helperText: helperText,
         border: OutlineInputBorder(
           borderSide: BorderSide(color: inputBorderColor),
           borderRadius: BorderRadius.circular(12),
         ),
       ),
       validator: validator,
+      onFieldSubmitted: onFieldSubmitted, // ✅ Sambungkan
     );
   }
 }
+
 
 /// ================= Custom DropdownFormField =================
 class CustomDropdownFormField<T> extends StatelessWidget {

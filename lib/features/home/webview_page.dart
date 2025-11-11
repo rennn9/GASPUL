@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:lottie/lottie.dart';
 import 'package:gaspul/core/services/tts_service.dart';
-import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart'; // ✅ import safe scaffold
+import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WebViewPage extends StatefulWidget {
   final String url;
@@ -30,7 +30,6 @@ class _WebViewPageState extends State<WebViewPage>
   late AnimationController _animationController;
 
   bool _ttsModeActive = false;
-  String _lastTappedText = "";
 
   @override
   void initState() {
@@ -72,7 +71,7 @@ class _WebViewPageState extends State<WebViewPage>
       _textZoom += 0.1;
     });
     _controller!.evaluateJavascript(
-        source: "document.body.style.zoom = '${_textZoom}';");
+        source: "document.body.style.zoom = '$_textZoom';");
   }
 
   void _decreaseTextSize() {
@@ -81,7 +80,7 @@ class _WebViewPageState extends State<WebViewPage>
       _textZoom = (_textZoom - 0.1).clamp(0.5, 3.0);
     });
     _controller!.evaluateJavascript(
-        source: "document.body.style.zoom = '${_textZoom}';");
+        source: "document.body.style.zoom = '$_textZoom';");
   }
 
   void _activateTTSMode() {
@@ -149,6 +148,51 @@ class _WebViewPageState extends State<WebViewPage>
       case 'read_tapped_text':
         _activateTTSMode();
         break;
+    }
+  }
+
+  Future<void> _openExternalApp(Uri uri) async {
+    if (!mounted) return;
+
+    try {
+      // ✅ Handle WhatsApp share
+      if (uri.scheme == 'whatsapp') {
+        final text = uri.queryParameters['text'] ?? '';
+        final encodedText = Uri.encodeComponent(text);
+        final waUri = Uri.parse("https://wa.me/?text=$encodedText");
+
+        if (await canLaunchUrl(waUri)) {
+          await launchUrl(waUri, mode: LaunchMode.externalApplication);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("WhatsApp tidak tersedia")),
+          );
+        }
+        return;
+      }
+
+      // ✅ Handle Telegram
+      if (uri.scheme == 'tg') {
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Telegram tidak tersedia")),
+          );
+        }
+        return;
+      }
+
+      // ✅ Generic external app
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Tidak ada aplikasi untuk membuka: $uri")),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error membuka aplikasi eksternal: $e");
     }
   }
 
@@ -228,39 +272,12 @@ class _WebViewPageState extends State<WebViewPage>
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(4),
                 child: progress < 100
-                    ? AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (context, child) {
-                          return ShaderMask(
-                            shaderCallback: (bounds) {
-                              return LinearGradient(
-                                colors: const [
-                                  Colors.red,
-                                  Colors.orange,
-                                  Colors.yellow,
-                                  Colors.green,
-                                  Colors.cyan,
-                                  Colors.blue,
-                                  Colors.indigo,
-                                  Colors.purple,
-                                  Colors.pink,
-                                ],
-                                begin:
-                                    Alignment(-1 + _animationController.value * 2, 0),
-                                end:
-                                    Alignment(1 + _animationController.value * 2, 0),
-                                tileMode: TileMode.mirror,
-                              ).createShader(bounds);
-                            },
-                            child: LinearProgressIndicator(
-                              value: progress / 100,
-                              backgroundColor: Colors.transparent,
-                              valueColor:
-                                  const AlwaysStoppedAnimation<Color>(Colors.white),
-                              minHeight: 4,
-                            ),
-                          );
-                        },
+                    ? LinearProgressIndicator(
+                        value: progress / 100,
+                        backgroundColor: Colors.transparent,
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Colors.white),
+                        minHeight: 4,
                       )
                     : const SizedBox.shrink(),
               ),
@@ -275,16 +292,25 @@ class _WebViewPageState extends State<WebViewPage>
             handlerName: 'onTapText',
             callback: (args) {
               if (args.isNotEmpty && args[0].toString().trim().isNotEmpty) {
-                String tappedText = args[0].toString();
-                setState(() {
-                  _lastTappedText = tappedText;
-                });
+                final tappedText = args[0].toString();
                 if (_ttsModeActive) {
                   TTSService().speak(tappedText);
                 }
               }
             },
           );
+        },
+        shouldOverrideUrlLoading: (controller, navigationAction) async {
+          final uri = navigationAction.request.url;
+          if (uri == null) return NavigationActionPolicy.ALLOW;
+
+          // Semua skema non-http/https ditangani external app
+          if (uri.scheme != 'http' && uri.scheme != 'https') {
+            await _openExternalApp(uri);
+            return NavigationActionPolicy.CANCEL;
+          }
+
+          return NavigationActionPolicy.ALLOW;
         },
         onLoadStop: (controller, url) async {
           await _injectTapListener();

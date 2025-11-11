@@ -11,7 +11,6 @@ import 'service_page.dart';
 import 'home_providers.dart';
 import 'package:gaspul/core/data/service_data.dart';
 import 'package:gaspul/core/theme/theme.dart';
-import 'package:gaspul/core/routes/no_animation_route.dart';
 import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -32,6 +31,16 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isMenuOpen = ref.watch(accessibilityMenuProvider);
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    final isTablet = size.shortestSide >= 600;
+    final isDesktop = size.width >= 1000;
+    final isLandscape = size.width > size.height;
+
+    // Jumlah kolom responsif
+    int crossAxisCount = 2; // default untuk HP
+    if (isTablet) crossAxisCount = 3;
+    if (isDesktop) crossAxisCount = 4;
+    if (isLandscape && !isTablet) crossAxisCount = 3; // HP lanskap bisa 3 kolom
 
     final kategoriUtama = [
       "publik",
@@ -52,19 +61,24 @@ class HomeScreen extends ConsumerWidget {
           Column(
             children: [
               const Header(),
-
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 48),
                   child: Stack(
                     children: [
                       const GlassContainer(),
-                      GridView.count(
+                      GridView.builder(
                         padding: const EdgeInsets.all(20),
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 16,
-                        children: kategoriUtama.map((key) {
+                        physics: const BouncingScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: isTablet ? 1.2 : 0.9,
+                        ),
+                        itemCount: kategoriUtama.length,
+                        itemBuilder: (context, index) {
+                          final key = kategoriUtama[index];
                           final data = layananData[key] as Map<String, dynamic>;
 
                           return MenuCard(
@@ -83,7 +97,7 @@ class HomeScreen extends ConsumerWidget {
                               );
                             },
                           );
-                        }).toList(),
+                        },
                       ),
                     ],
                   ),

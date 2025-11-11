@@ -6,7 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:gaspul/core/theme/theme.dart';
 import 'package:gaspul/core/data/queue_data.dart';
 import 'package:gaspul/core/services/queue_service.dart';
-import 'package:gaspul/core/services/server_time_service.dart'; // ✅ impor baru
+import 'package:gaspul/core/services/server_time_service.dart';
 import 'package:gaspul/core/widgets/form_widgets.dart';
 import '../home/widgets/main_app_bar.dart';
 import 'package:gaspul/core/widgets/gaspul_safe_scaffold.dart';
@@ -24,6 +24,7 @@ class _QueueFormPageState extends ConsumerState<QueueFormPage> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController(); // ✅ email opsional
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
@@ -47,12 +48,11 @@ class _QueueFormPageState extends ConsumerState<QueueFormPage> {
     return [];
   }
 
-  // ✅ Generate tanggal menggunakan waktu server
   List<Map<String, dynamic>> generateTanggalOptions(DateTime serverNow) {
     final List<Map<String, dynamic>> options = [];
 
     if (serverNow.weekday == DateTime.saturday || serverNow.weekday == DateTime.sunday) {
-      return options; // weekend → kosong
+      return options;
     }
 
     options.add({"label": "Hari ini", "date": serverNow});
@@ -115,12 +115,13 @@ class _QueueFormPageState extends ConsumerState<QueueFormPage> {
 
     if (_formKey.currentState!.validate()) {
       final formData = {
-        'nama': _nameController.text,
-        'no_hp': _phoneController.text,
+        'nama_lengkap': _nameController.text,
+        'email': _emailController.text.isEmpty ? null : _emailController.text, // ✅ opsional
+        'no_hp_wa': _phoneController.text,
         'alamat': _addressController.text,
         'bidang_layanan': selectedBidang,
         'layanan': selectedLayanan,
-        'tanggal_daftar': selectedTanggal,
+        'tanggal_layanan': selectedTanggal,
         'keterangan': _notesController.text,
       };
 
@@ -133,6 +134,7 @@ class _QueueFormPageState extends ConsumerState<QueueFormPage> {
           onSuccess: () {
             _formKey.currentState!.reset();
             _nameController.clear();
+            _emailController.clear();
             _phoneController.clear();
             _addressController.clear();
             _notesController.clear();
@@ -246,16 +248,33 @@ class _QueueFormPageState extends ConsumerState<QueueFormPage> {
                   // Nama
                   CustomTextFormField(
                     controller: _nameController,
-                    label: "Nama",
+                    label: "Nama Lengkap",
                     validator: (value) =>
                         value == null || value.isEmpty ? "Nama wajib diisi" : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // ✅ Email (opsional)
+                  CustomTextFormField(
+                    controller: _emailController,
+                    label: "Email (opsional)",
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value != null && value.isNotEmpty) {
+                        final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                        if (!emailRegex.hasMatch(value)) {
+                          return "Format email tidak valid";
+                        }
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 12),
 
                   // No HP
                   CustomTextFormField(
                     controller: _phoneController,
-                    label: "No HP",
+                    label: "No. HP/WA",
                     keyboardType: TextInputType.phone,
                     validator: (value) =>
                         value == null || value.isEmpty ? "No HP wajib diisi" : null,
@@ -310,7 +329,7 @@ class _QueueFormPageState extends ConsumerState<QueueFormPage> {
                   // Keterangan
                   CustomTextFormField(
                     controller: _notesController,
-                    label: "Keterangan",
+                    label: "Keterangan (Opsional)",
                     maxLines: 3,
                   ),
                   const SizedBox(height: 20),
@@ -349,6 +368,7 @@ class _QueueFormPageState extends ConsumerState<QueueFormPage> {
   void dispose() {
     _loadingOverlay?.remove();
     _nameController.dispose();
+    _emailController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
     _notesController.dispose();

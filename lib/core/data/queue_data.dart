@@ -9,6 +9,10 @@ const List<Map<String, String>> bidangLayanan = [
     "icon": "assets/images/Logo Bidang Bimbingan Masyarakat Islam.png",
   },
   {
+    "name": "Bidang Pendidikan Madrasah",
+    "icon": "assets/images/Logo Bidang Pendidikan Madrasah.png",
+  },
+  {
     "name": "Bimas Kristen",
     "icon": "assets/images/Logo Bimas Kristen.png",
   },
@@ -24,9 +28,11 @@ const List<Map<String, String>> bidangLayanan = [
     "name": "Bimas Buddha",
     "icon": "assets/images/Logo Bimas Buddha.png",
   },
+  {
+    "name": "Layanan Konsultasi",
+    "icon": "assets/images/Logo Layanan Konsultasi.png",
+  },
 ];
-
-
 
 /// Daftar layanan per bidang
 const Map<String, List<String>> layananPerBidang = {
@@ -46,6 +52,9 @@ const Map<String, List<String>> layananPerBidang = {
     "Kalibrasi Arah Kiblat",
     "Layanan Bantuan Rumah Ibadah /Lembagan Keagamaan",
   ],
+  "Bidang Pendidikan Madrasah": [
+    "Legalisir Ijazah Madrasah",
+  ],
   "Bimas Kristen": [
     "Layanan Surat Tanda Lapor / Tanda Daftar Rumah Ibadah / Lembaga Keagamaan Kristen",
     "Layanan Bantuan Rumah Ibadah / Lembagan Keagamaan Kristen",
@@ -59,5 +68,11 @@ const Map<String, List<String>> layananPerBidang = {
   ],
   "Bimas Buddha": [
     "Layanan Bantuan Rumah Ibadah /Lembagan Keagamaan Buddha",
+  ],
+  "Layanan Konsultasi": [
+    "Konsultasi Hukum dan Keagamaan",
+    "Konsultasi Pendidikan dan Madrasah",
+    "Konsultasi Layanan Keagamaan",
+    "Konsultasi Organisasi/Lembaga Keagamaan",
   ],
 };
