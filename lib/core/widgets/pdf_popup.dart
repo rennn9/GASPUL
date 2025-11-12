@@ -120,14 +120,16 @@ class _PdfPopupState extends State<PdfPopup> {
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
     final screen = MediaQuery.of(context).size;
-    final isLandscape = screen.width > screen.height;
+
+    // 🔹 Faktor scaling keseluruhan
+    const double scaleFactor = 0.85;
 
     return Material(
       type: MaterialType.transparency,
       child: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(
-            vertical: isLandscape ? screen.height * 0.05 : screen.height * 0.02,
+            vertical: screen.height * 0.02,
             horizontal: screen.width * 0.03,
           ),
           child: loading
@@ -145,9 +147,9 @@ class _PdfPopupState extends State<PdfPopup> {
                         final pdfRatio =
                             (pdfPage.width ?? 1) / (pdfPage.height ?? 1);
 
-                        // 🔹 Hitung ukuran popup yang aman
-                        final double maxWidth = screen.width * 0.9;
-                        final double maxHeight = screen.height * 0.8;
+                        // 🔹 Hitung ukuran popup yang aman dengan scale
+                        final double maxWidth = screen.width * 0.9 * scaleFactor;
+                        final double maxHeight = screen.height * 0.8 * scaleFactor;
 
                         double width = maxWidth;
                         double height = width / pdfRatio;
@@ -165,7 +167,7 @@ class _PdfPopupState extends State<PdfPopup> {
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
                                   maxWidth: width,
-                                  maxHeight: height + 120,
+                                  maxHeight: height + 120, // space untuk tombol
                                 ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -177,8 +179,7 @@ class _PdfPopupState extends State<PdfPopup> {
                                       child: PdfView(
                                         controller: pdfController!,
                                         pageSnapping: false,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
+                                        physics: const NeverScrollableScrollPhysics(),
                                       ),
                                     ),
 
@@ -189,12 +190,10 @@ class _PdfPopupState extends State<PdfPopup> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12, vertical: 10),
                                       child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: const [
                                           Icon(Icons.info_outline,
-                                              size: 18,
-                                              color: Colors.deepOrange),
+                                              size: 18, color: Colors.deepOrange),
                                           SizedBox(width: 8),
                                           Flexible(
                                             child: Text(
@@ -219,47 +218,34 @@ class _PdfPopupState extends State<PdfPopup> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           ElevatedButton.icon(
-                                            onPressed: () =>
-                                                _printPdf(context),
-                                            icon: const Icon(Icons.print,
-                                                size: 18),
+                                            onPressed: () => _printPdf(context),
+                                            icon: const Icon(Icons.print, size: 18),
                                             label: const Text('Print / Save'),
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: primaryColor,
                                               foregroundColor: Colors.white,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8),
-                                              textStyle: const TextStyle(
-                                                  fontSize: 13),
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 12, vertical: 8),
+                                              textStyle: const TextStyle(fontSize: 13),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
+                                                borderRadius: BorderRadius.circular(8),
                                               ),
                                             ),
                                           ),
                                           ElevatedButton.icon(
                                             onPressed: () {
-                                              if (mounted) {
-                                                Navigator.pop(context);
-                                              }
+                                              if (mounted) Navigator.pop(context);
                                             },
-                                            icon: const Icon(Icons.close,
-                                                size: 18),
+                                            icon: const Icon(Icons.close, size: 18),
                                             label: const Text('Tutup'),
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.red,
                                               foregroundColor: Colors.white,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8),
-                                              textStyle: const TextStyle(
-                                                  fontSize: 13),
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 12, vertical: 8),
+                                              textStyle: const TextStyle(fontSize: 13),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
+                                                borderRadius: BorderRadius.circular(8),
                                               ),
                                             ),
                                           ),

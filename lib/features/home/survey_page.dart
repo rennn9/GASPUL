@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'widgets/survey/respondent_form.dart';
 import 'widgets/survey/question_step.dart';
 import 'widgets/survey/survey_models.dart';
+import 'package:gaspul/features/home/widgets/main_app_bar.dart';
 
 class SurveyPage extends StatefulWidget {
   const SurveyPage({super.key});
@@ -90,8 +91,8 @@ final payload = {
   "pekerjaan": pekerjaanSelected == "Lainnya"
       ? pekerjaanLainController.text
       : pekerjaanSelected ?? '',
-  "bidang": controllers["Bidang"]!.text, // ❌ sebelumnya 'bidang_layanan', sekarang 'bidang'
-  "tanggal": controllers["Tanggal"]!.text,
+  "bidang": controllers["Bidang"]!.text, // ✅ pastikan konsisten dgn kolom di tabel
+  "tanggal": respondentData['tanggal'], // ✅ ambil langsung dari data antrian (tanggal_layanan)
 };
 
 
@@ -120,7 +121,7 @@ final payload = {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Survey Pelayanan')),
+      appBar: const MainAppBar(title: "Survey Pelayanan"), // ✅ pakai MainAppBar
       body: SafeArea(
         child: step == 0
             ? RespondentForm(

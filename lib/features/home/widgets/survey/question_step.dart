@@ -68,31 +68,68 @@ class _QuestionStepState extends State<QuestionStep> {
     showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Lottie.asset('assets/lottie/Success_Send.json', width: 200, height: 200, repeat: false),
-            const SizedBox(height: 12),
-            const Text(
-              "Survey berhasil dikirim!",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
-              textAlign: TextAlign.center,
+      builder: (_) => LayoutBuilder(
+        builder: (context, constraints) {
+          final isLandscape = constraints.maxWidth > constraints.maxHeight;
+          return Dialog(
+            backgroundColor: Colors.black.withOpacity(0.6),
+            insetPadding: EdgeInsets.symmetric(
+              horizontal: isLandscape ? 100 : 32,
+              vertical: isLandscape ? 24 : 80,
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-              child: const Text("Tutup"),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Lottie.asset(
+                      'assets/lottie/Success_Send.json',
+                      width: isLandscape ? 150 : 200,
+                      height: isLandscape ? 150 : 200,
+                      repeat: false,
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "Survey berhasil dikirim!",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        "Tutup",
+                        style: TextStyle(
+                          color: Colors.white, // ✅ teks jadi putih
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ]),
-        ),
+          );
+        },
       ),
     );
   }
@@ -101,26 +138,21 @@ class _QuestionStepState extends State<QuestionStep> {
     if (widget.respondentData['id'] == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text("Harap pilih nomor antrian terlebih dahulu"), backgroundColor: Colors.red),
+          content: Text("Harap pilih nomor antrian terlebih dahulu"),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
 
-    // ✅ Debug: log respondentData
-    debugPrint("=== respondentData sebelum submit ===");
-    widget.respondentData.forEach((k, v) => debugPrint("$k: $v"));
-
-    // collect all answers
     final allAnswers = <String, String>{};
     for (var i = 0; i < widget.questions.length; i++) {
-      allAnswers[widget.questions[i].label] = widget.questionControllers[i]?.text ?? "";
+      allAnswers[widget.questions[i].label] =
+          widget.questionControllers[i]?.text ?? "";
     }
 
-    // debug: log jawaban semua pertanyaan
-    debugPrint("=== jawaban semua pertanyaan ===");
-    allAnswers.forEach((k, v) => debugPrint("$k: $v"));
-
-    final saran = widget.questionControllers[widget.questions.length - 1]?.text ?? "";
+    final saran =
+        widget.questionControllers[widget.questions.length - 1]?.text ?? "";
 
     final surveyData = {
       ...widget.respondentData,
@@ -128,16 +160,8 @@ class _QuestionStepState extends State<QuestionStep> {
       'saran': saran,
     };
 
-    // debug: log payload final
-    debugPrint("=== payload surveyData yang dikirim ===");
-    surveyData.forEach((k, v) => debugPrint("$k: $v"));
-
     try {
       final res = await SurveyService.submitSurvey(surveyData);
-
-      debugPrint("=== response server ===");
-      debugPrint(res.toString());
-
       if (res['success'] == true) {
         try {
           final cb = widget.respondentData['removeAntrianCallback'];
@@ -145,22 +169,21 @@ class _QuestionStepState extends State<QuestionStep> {
             cb(widget.respondentData['id']);
           }
         } catch (_) {}
-
         _showSuccessPopup(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(res['message'] ?? "Gagal mengirim survey"),
-              backgroundColor: Colors.red),
+            content: Text(res['message'] ?? "Gagal mengirim survey"),
+            backgroundColor: Colors.red,
+          ),
         );
       }
-    } catch (e, st) {
-      // log error lengkap jika koneksi / json error
-      debugPrint("=== ERROR saat submit ===");
-      debugPrint(e.toString());
-      debugPrint(st.toString());
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Terjadi kesalahan saat submit: $e"), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text("Terjadi kesalahan saat submit: $e"),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -168,103 +191,203 @@ class _QuestionStepState extends State<QuestionStep> {
   @override
   Widget build(BuildContext context) {
     final question = widget.questions[current];
+    final progress = (current + 1) / widget.questions.length;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text("Pertanyaan ${current + 1} dari ${widget.questions.length}",
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          Text(question.label, style: const TextStyle(fontSize: 25), textAlign: TextAlign.center),
-          const SizedBox(height: 16),
-
-          if (question.options.isEmpty)
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // ===== Progress bar =====
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(children: [
-                TextField(
-                  controller: widget.questionControllers[current] ??= TextEditingController(),
-                  maxLines: 10,
-                  minLines: 8,
-                  decoration: const InputDecoration(
-                      labelText: "Jawaban Anda", border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 16),
-                if (current == widget.questions.length - 1)
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      debugPrint("Tombol KIRIM ditekan");
-                      await _submitSurvey();
-                    },
-                    icon: const Icon(Icons.send),
-                    label: const Text("Kirim"),
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Column(
+                children: [
+                  LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey[300],
+                    color: Colors.green,
+                    minHeight: 10,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-              ]),
-            ),
-
-          if (question.options.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: List.generate(question.options.length, (index) {
-                final option = question.options[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: _getOptionColorByIndex(index), width: 2),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                    ),
-                    onPressed: () {
-                      widget.questionControllers[current] ??= TextEditingController();
-                      widget.questionControllers[current]!.text = option;
-                      if (current < widget.questions.length - 1) {
-                        setState(() => current += 1);
-                      } else {
-                        debugPrint("Jawaban terakhir dipilih: $option");
-                        _submitSurvey();
-                      }
-                    },
-                    child: Text(
-                      "${_getOptionEmojiByIndex(index)}  $option",
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                      textAlign: TextAlign.center,
-                    ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Pertanyaan ${current + 1} dari ${widget.questions.length}",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                );
-              }),
-            ),
-
-          const SizedBox(height: 24),
-
-          // Back button
-          Center(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 32),
-              width: 200,
-              child: OutlinedButton(
-                onPressed: () {
-                  if (current == 0) {
-                    widget.previousQuestion();
-                  } else {
-                    setState(() => current -= 1);
-                  }
-                },
-                style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.grey, width: 1.5),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                child: const Text("Kembali",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
+                ],
               ),
             ),
-          ),
-        ]),
+
+            const SizedBox(height: 12),
+            Text(
+              question.label,
+              style: const TextStyle(fontSize: 25),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+
+            // ===== Opsi Jawaban =====
+            if (question.options.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: widget.questionControllers[current] ??=
+                          TextEditingController(),
+                      maxLines: 10,
+                      minLines: 8,
+                      decoration: const InputDecoration(
+                        labelText: "Jawaban Anda",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    if (current == widget.questions.length - 1)
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          await _submitSurvey();
+                        },
+                        icon: const Icon(Icons.send),
+                        label: const Text("Kirim"),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+            if (question.options.isNotEmpty)
+              isLandscape
+                  ? Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: List.generate(question.options.length, (index) {
+                        final option = question.options[index];
+                        return OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: _getOptionColorByIndex(index),
+                              width: 2,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            foregroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 20,
+                            ),
+                          ),
+                          onPressed: () {
+                            widget.questionControllers[current] ??=
+                                TextEditingController();
+                            widget.questionControllers[current]!.text = option;
+                            if (current < widget.questions.length - 1) {
+                              setState(() => current += 1);
+                            } else {
+                              _submitSurvey();
+                            }
+                          },
+                          child: Text(
+                            "${_getOptionEmojiByIndex(index)} $option",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: List.generate(question.options.length, (index) {
+                        final option = question.options[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: _getOptionColorByIndex(index),
+                                width: 2,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              foregroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 24,
+                              ),
+                            ),
+                            onPressed: () {
+                              widget.questionControllers[current] ??=
+                                  TextEditingController();
+                              widget.questionControllers[current]!.text =
+                                  option;
+                              if (current < widget.questions.length - 1) {
+                                setState(() => current += 1);
+                              } else {
+                                _submitSurvey();
+                              }
+                            },
+                            child: Text(
+                              "${_getOptionEmojiByIndex(index)}  $option",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+
+            const SizedBox(height: 24),
+            // Tombol kembali
+            Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 32),
+                width: 200,
+                child: OutlinedButton(
+                  onPressed: () {
+                    if (current == 0) {
+                      widget.previousQuestion();
+                    } else {
+                      setState(() => current -= 1);
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.grey, width: 1.5),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "Kembali",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

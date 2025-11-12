@@ -67,24 +67,29 @@ Future<void> _loadAntrianSelesai() async {
     } catch (_) {}
   }
 
-  void _onAntrianSelected(Map<String, dynamic>? val) {
-    if (val != null) {
-      final match = antrianList.firstWhere((a) => a['id'] == val['id']);
-      setState(() {
-        selectedAntrian = match;
-        widget.controllers["Nama Responden"]!.text = match['nama_lengkap'] ?? '';
-        widget.controllers["Nomor Whatsapp"]!.text = match['no_hp_wa'] ?? '';
-        widget.controllers["Bidang"]!.text = match['bidang_layanan'] ?? '';
+void _onAntrianSelected(Map<String, dynamic>? val) {
+  if (val != null) {
+    final match = antrianList.firstWhere((a) => a['id'] == val['id']);
+    setState(() {
+      selectedAntrian = match;
 
-// Update respondentData supaya SurveyPage tahu antrian dipilih
-widget.respondentData['id'] = match['id'];
-widget.respondentData['nomor_antrian'] = match['nomor_antrian'];
-widget.respondentData['nama_responden'] = match['nama_lengkap'];
-widget.respondentData['no_hp_wa'] = match['no_hp_wa'];
-widget.respondentData['bidang'] = match['bidang_layanan']; // ❌ ubah key menjadi 'bidang'
-      });
-    }
+      // 🔹 Isi otomatis field form dari data antrian
+      widget.controllers["Nama Responden"]!.text = match['nama_lengkap'] ?? '';
+      widget.controllers["Nomor Whatsapp"]!.text = match['no_hp_wa'] ?? '';
+      widget.controllers["Bidang"]!.text = match['bidang_layanan'] ?? '';
+      widget.controllers["Tanggal"]!.text = match['tanggal_layanan'] ?? ''; // ✅ ambil dari database
+
+      // 🔹 Update respondentData agar bisa dikirim ke SurveyPage
+      widget.respondentData['id'] = match['id'];
+      widget.respondentData['nomor_antrian'] = match['nomor_antrian'];
+      widget.respondentData['nama_responden'] = match['nama_lengkap'];
+      widget.respondentData['no_hp_wa'] = match['no_hp_wa'];
+      widget.respondentData['bidang'] = match['bidang_layanan']; // ✅ sesuai kolom di tabel survey
+      widget.respondentData['tanggal'] = match['tanggal_layanan']; // ✅ isi tanggal untuk survey
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
