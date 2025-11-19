@@ -53,98 +53,113 @@ final layananData = {
       },
     ],
   },
-"kabupaten": {
-  "title": "Layanan Kabupaten",
-  "subtitle": "Layanan Tingkat Daerah",
-  "image": "assets/images/Logo Layanan Kabupaten.png",
-  "layout": "grid",
-  "items": [
-    {"title": "Majene", "icon": "assets/images/Logo Kabupaten Majene.png"},
-    {"title": "Mamasa", "icon": "assets/images/Logo Kabupaten Mamasa.png"},
-    {"title": "Mamuju", "icon": "assets/images/Logo Kabupaten Mamuju.png"},
-    {"title": "Mamuju Tengah", "icon": "assets/images/Logo Kabupaten Mamuju Tengah.png"},
-    {
-      "title": "Pasangkayu",
-      "icon": "assets/images/Logo Kabupaten Pasangkayu.png",
-      "nestedPage": "pasangkayuDetail" // <-- ini untuk page baru
-    },
-    {"title": "Polewali Mandar", "icon": "assets/images/Logo Kabupaten Polewali Mandar.png"},
-  ],
-},
-
-// Halaman baru untuk Pasangkayu
-"pasangkayuDetail": {
-  "title": "Pasangkayu",
-  "subtitle": "Layanan Kabupaten Pasangkayu",
-  "image": "assets/images/Logo Kabupaten Pasangkayu.png",
-  "layout": "grid",
-  "items": [
-    {
-      "title": "KANKEMENAG PASANGKAYU",
-      "icon": "assets/images/Logo KEMENAG.png",
-      "link": "https://kemenagpasangkayu.id/"
-    },
-    {
-      "title": "DILAYANI SIGA'",
-      "icon": "assets/images/Logo KEMENAG.png",
-      "nestedPage": "sigaPasangkayu"
-    },
-  ],
-},
-
-// Halaman nested lagi untuk SIGA’ Pasangkayu
-"sigaPasangkayu": {
-  "title": "DILAYANI SIGA'",
-  "subtitle": "Layanan Cuti",
-  "image": "assets/images/Logo KEMENAG.png",
-  "layout": "grid",
-  "items": [
-    {
-      "title": "Layanan Cuti",
-      "icon": "assets/images/Logo Cuti.png",
-      "link": "https://kemenagpasangkayu.id/cuti/login"
-    },
-  ],
-},
-"pendidikan": {
-  "title": "Layanan Pendidikan",
-  "subtitle": "Layanan Pendidikan",
-  "image": "assets/images/Logo Layanan Pendidikan.png",
-  "layout": "grid",
-  "items": [
-    {
-      "title": "SIAGA",
-      "icon": "assets/images/Logo SIAGA.png",
-      "link": "https://siagapendis.kemenag.go.id/"
-    },
-    {
-      "title": "Emis",
-      "icon": "assets/images/Logo Emis.png",
-      "link": "https://emis.kemenag.go.id/"
-    },
-    {
-      "title": "Sihabba",
-      "icon": "assets/images/Logo Sihabba.png",
-      "link": "https://sihabba.gaspul.com/admin/login"
-    },
-    {
-      "title": "SIMPATIKA",
-      "icon": "assets/images/Logo SIMPATIKA.png",
-      "link": "https://simpatika.kemenag.go.id/"
-    },
-    {
-      "title": "PDUM",
-      "icon": "assets/images/Logo PDUM.png",
-      "link": "https://pdum.kemenag.go.id/"
-    },
-    {
-      "title": "GTK Madrasah",
-      "icon": "assets/images/Logo GTK Madrasah.png",
-      "link": "https://emisgtk.kemenag.go.id/"
-    },
-  ],
-},
-
+  "kabupaten": {
+    "title": "Layanan Kabupaten",
+    "subtitle": "Layanan Tingkat Daerah",
+    "image": "assets/images/Logo Layanan Kabupaten.png",
+    "layout": "grid",
+    "items": [
+      {"title": "Majene", "icon": "assets/images/Logo Kabupaten Majene.png"},
+      {
+        "title": "Mamasa",
+        "icon": "assets/images/Logo Kabupaten Mamasa.png",
+        "nestedPage": "mamasaDetail"
+      },
+      {"title": "Mamuju", "icon": "assets/images/Logo Kabupaten Mamuju.png"},
+      {"title": "Mamuju Tengah", "icon": "assets/images/Logo Kabupaten Mamuju Tengah.png"},
+      {
+        "title": "Pasangkayu",
+        "icon": "assets/images/Logo Kabupaten Pasangkayu.png",
+        "nestedPage": "pasangkayuDetail"
+      },
+      {"title": "Polewali Mandar", "icon": "assets/images/Logo Kabupaten Polewali Mandar.png"},
+    ],
+  },
+  // Halaman detail untuk Mamasa
+  "mamasaDetail": {
+    "title": "Mamasa",
+    "subtitle": "Layanan Kabupaten Mamasa",
+    "image": "assets/images/Logo Kabupaten Mamasa.png",
+    "layout": "grid",
+    "items": [
+      {
+        "title": "Sikamase",
+        "icon": "assets/images/Logo Sikamase.png",
+        "link": "https://sikamase.com/"
+      },
+    ],
+  },
+  // Halaman baru untuk Pasangkayu
+  "pasangkayuDetail": {
+    "title": "Pasangkayu",
+    "subtitle": "Layanan Kabupaten Pasangkayu",
+    "image": "assets/images/Logo Kabupaten Pasangkayu.png",
+    "layout": "grid",
+    "items": [
+      {
+        "title": "KANKEMENAG PASANGKAYU",
+        "icon": "assets/images/Logo KEMENAG.png",
+        "link": "https://kemenagpasangkayu.id/"
+      },
+      {
+        "title": "DILAYANI SIGA'",
+        "icon": "assets/images/Logo KEMENAG.png",
+        "nestedPage": "sigaPasangkayu"
+      },
+    ],
+  },
+  // Halaman nested lagi untuk SIGA’ Pasangkayu
+  "sigaPasangkayu": {
+    "title": "DILAYANI SIGA'",
+    "subtitle": "Layanan Cuti",
+    "image": "assets/images/Logo KEMENAG.png",
+    "layout": "grid",
+    "items": [
+      {
+        "title": "Layanan Cuti",
+        "icon": "assets/images/Logo Cuti.png",
+        "link": "https://kemenagpasangkayu.id/cuti/login"
+      },
+    ],
+  },
+  "pendidikan": {
+    "title": "Layanan Pendidikan",
+    "subtitle": "Layanan Pendidikan",
+    "image": "assets/images/Logo Layanan Pendidikan.png",
+    "layout": "grid",
+    "items": [
+      {
+        "title": "SIAGA",
+        "icon": "assets/images/Logo SIAGA.png",
+        "link": "https://siagapendis.kemenag.go.id/"
+      },
+      {
+        "title": "Emis",
+        "icon": "assets/images/Logo Emis.png",
+        "link": "https://emis.kemenag.go.id/"
+      },
+      {
+        "title": "Sihabba",
+        "icon": "assets/images/Logo Sihabba.png",
+        "link": "https://sihabba.gaspul.com/admin/login"
+      },
+      {
+        "title": "SIMPATIKA",
+        "icon": "assets/images/Logo SIMPATIKA.png",
+        "link": "https://simpatika.kemenag.go.id/"
+      },
+      {
+        "title": "PDUM",
+        "icon": "assets/images/Logo PDUM.png",
+        "link": "https://pdum.kemenag.go.id/"
+      },
+      {
+        "title": "GTK Madrasah",
+        "icon": "assets/images/Logo GTK Madrasah.png",
+        "link": "https://emisgtk.kemenag.go.id/"
+      },
+    ],
+  },
   "kua": {
     "title": "Layanan KUA",
     "subtitle": "Kantor Urusan Agama",

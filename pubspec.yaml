@@ -2,7 +2,7 @@ name: gaspul
 description: "Gerakan Aktif Sistematis Pelayanan Unggul"
 publish_to: 'none'
 
-version: 1.0.0+13
+version: 1.0.0+15
 
 environment:
   sdk: ^3.8.1
@@ -100,3 +100,4 @@ flutter:
     - assets/images/Logo Layanan Konsultasi.png
     - assets/lottie/Success_Send.json
     - assets/images/Logo Survey.png
+    - assets/images/Logo Sikamase.png

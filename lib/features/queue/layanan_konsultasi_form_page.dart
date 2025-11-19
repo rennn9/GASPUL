@@ -1,4 +1,5 @@
 // lib/features/queue/layanan_konsultasi_form_page.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,10 +26,10 @@ class _LayananKonsultasiFormPageState
 
   final _nameController = TextEditingController();
   final _whatsappController = TextEditingController();
-  final _alamatController = TextEditingController(); // ✅ Tambahan
+  final _alamatController = TextEditingController();
   final _emailController = TextEditingController();
   final _perihalController = TextEditingController();
-  final _isiController = TextEditingController();
+  final _asalInstansiController = TextEditingController();
   final _tanggalController = TextEditingController();
 
   File? _selectedFile;
@@ -39,74 +40,136 @@ class _LayananKonsultasiFormPageState
   @override
   void initState() {
     super.initState();
+    debugPrint("[INIT] LayananKonsultasiFormPage loaded");
     _setTanggalServer();
   }
 
-  /// ✅ Set tanggal konsultasi berdasarkan waktu server
+  /// -------------------------------------------------------------
+  /// 🔧  Mendapatkan waktu server + log detail
+  /// -------------------------------------------------------------
   Future<void> _setTanggalServer() async {
+    debugPrint("[TANGGAL] Mengambil waktu server...");
+
     final serverNow = await ServerTimeService.getServerTime();
+
     if (serverNow != null) {
+      debugPrint("[TANGGAL] Server time berhasil didapat: $serverNow");
       _tanggalController.text =
           DateFormat('EEEE, dd-MM-yyyy', 'id').format(serverNow);
     } else {
       final now = DateTime.now();
+      debugPrint("[TANGGAL] Gagal ambil server time. Pakai lokal: $now");
       _tanggalController.text =
           DateFormat('EEEE, dd-MM-yyyy', 'id').format(now);
     }
+
     setState(() {});
   }
 
+  /// -------------------------------------------------------------
+  /// 📂  File Picker + log detail
+  /// -------------------------------------------------------------
   Future<void> _pickFile() async {
+    debugPrint("[FILE] Membuka FilePicker...");
+
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
       withData: true,
     );
 
-    if (result != null && result.files.isNotEmpty) {
-      final file = File(result.files.single.path!);
-      final sizeInMB = file.lengthSync() / (1024 * 1024);
-
-      if (sizeInMB > 3) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Ukuran file maksimal 3MB")),
-        );
-        return;
-      }
-
-      setState(() {
-        _selectedFile = file;
-      });
+    if (result == null || result.files.isEmpty) {
+      debugPrint("[FILE] User membatalkan pemilihan file.");
+      return;
     }
+
+    final file = File(result.files.single.path!);
+    final sizeInMB = file.lengthSync() / (1024 * 1024);
+
+    debugPrint("[FILE] File dipilih: ${file.path}");
+    debugPrint("[FILE] Ukuran file: ${sizeInMB.toStringAsFixed(2)} MB");
+
+    if (sizeInMB > 3) {
+      debugPrint("[FILE] ERROR → File lebih besar dari 3MB!");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Ukuran file maksimal 3MB")),
+      );
+      return;
+    }
+
+    setState(() {
+      _selectedFile = file;
+    });
+
+    debugPrint("[FILE] File berhasil disimpan ke state.");
   }
 
+  /// -------------------------------------------------------------
+  /// 📤  Submit Form + log super lengkap
+  /// -------------------------------------------------------------
   Future<void> _submitForm(BuildContext context) async {
-    if (!_formKey.currentState!.validate()) return;
+    debugPrint("[SUBMIT] Validasi form dimulai...");
+
+    if (!_formKey.currentState!.validate()) {
+      debugPrint("[SUBMIT] ❌ Validasi gagal. Form tidak lengkap.");
+      return;
+    }
+
+    debugPrint("[SUBMIT] ✔ Validasi berhasil.");
+    debugPrint("[SUBMIT] Mengirim data...");
 
     setState(() => _isLoading = true);
 
-    await _service.submitKonsultasiForm(
-      context: context,
-      nameController: _nameController,
-      whatsappController: _whatsappController,
-      alamatController: _alamatController, // ✅ dikirim ke service
-      emailController: _emailController,
-      perihalController: _perihalController,
-      isiController: _isiController,
-      tanggalController: _tanggalController,
-      selectedFile: _selectedFile,
-    );
+    debugPrint("""
+[PAYLOAD] Data yang akan dikirim:
+-------------------------------------------------
+Nama             : ${_nameController.text}
+WA               : ${_whatsappController.text}
+Alamat           : ${_alamatController.text}
+Email            : ${_emailController.text}
+Asal Instansi    : ${_asalInstansiController.text}
+Perihal          : ${_perihalController.text}
+Tanggal          : ${_tanggalController.text}
+File             : ${_selectedFile?.path ?? "(NULL)"}
+-------------------------------------------------
+""");
+
+    try {
+      await _service.submitKonsultasiForm(
+        context: context,
+        nameController: _nameController,
+        whatsappController: _whatsappController,
+        alamatController: _alamatController,
+        emailController: _emailController,
+        perihalController: _perihalController,
+        asalInstansiController: _asalInstansiController,
+        tanggalController: _tanggalController,
+        selectedFile: _selectedFile,
+      );
+
+      debugPrint("[SUBMIT] ✔ Form berhasil dikirim ke server.");
+
+    } catch (e, s) {
+      debugPrint("[SUBMIT] ❌ ERROR saat submit: $e");
+      debugPrint("[STACKTRACE]\n$s");
+    }
 
     setState(() {
+      debugPrint("[SUBMIT] Reset state setelah submit.");
       _selectedFile = null;
       _isLoading = false;
     });
 
-    await _setTanggalServer(); // refresh tanggal server
+    await _setTanggalServer(); // Refresh tanggal
   }
 
+  /// -------------------------------------------------------------
+  /// UI
+  /// -------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
+    debugPrint("[UI] Build dipanggil. Loading: $_isLoading");
+
     final theme = Theme.of(context);
 
     return GasPulSafeScaffold(
@@ -119,7 +182,6 @@ class _LayananKonsultasiFormPageState
           builder: (context, constraints) {
             return Stack(
               children: [
-                // 🌟 Form utama
                 SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   padding: EdgeInsets.only(
@@ -141,11 +203,11 @@ class _LayananKonsultasiFormPageState
                             CustomTextFormField(
                               controller: _nameController,
                               label: "Nama Lengkap *",
-                              validator: (v) => v == null || v.isEmpty
-                                  ? "Nama wajib diisi"
-                                  : null,
+                              validator: (v) =>
+                                  v == null || v.isEmpty ? "Nama wajib diisi" : null,
                             ),
                             const SizedBox(height: 12),
+
                             CustomTextFormField(
                               controller: _whatsappController,
                               label: "No. HP/WA *",
@@ -156,7 +218,6 @@ class _LayananKonsultasiFormPageState
                             ),
                             const SizedBox(height: 12),
 
-                            // ✅ Field Alamat baru
                             CustomTextFormField(
                               controller: _alamatController,
                               label: "Alamat *",
@@ -173,6 +234,16 @@ class _LayananKonsultasiFormPageState
                               keyboardType: TextInputType.emailAddress,
                             ),
                             const SizedBox(height: 12),
+
+                            CustomTextFormField(
+                              controller: _asalInstansiController,
+                              label: "Asal Instansi *",
+                              validator: (v) => v == null || v.isEmpty
+                                  ? "Asal instansi wajib diisi"
+                                  : null,
+                            ),
+                            const SizedBox(height: 12),
+
                             CustomTextFormField(
                               controller: _perihalController,
                               label: "Perihal *",
@@ -182,15 +253,7 @@ class _LayananKonsultasiFormPageState
                                   : null,
                             ),
                             const SizedBox(height: 12),
-                            CustomTextFormField(
-                              controller: _isiController,
-                              label: "Isi Konsultasi *",
-                              maxLines: 3,
-                              validator: (v) => v == null || v.isEmpty
-                                  ? "Isi konsultasi wajib diisi"
-                                  : null,
-                            ),
-                            const SizedBox(height: 12),
+
                             CustomTextFormField(
                               controller: _tanggalController,
                               label: "Tanggal Konsultasi",
@@ -203,6 +266,7 @@ class _LayananKonsultasiFormPageState
                               helperText: "Tanggal otomatis, tidak bisa diubah",
                             ),
                             const SizedBox(height: 12),
+
                             OutlinedButton.icon(
                               onPressed: _pickFile,
                               icon: const Icon(Icons.upload_file),
@@ -212,18 +276,19 @@ class _LayananKonsultasiFormPageState
                                     : "Upload File PDF (Opsional, Maks 3MB)",
                               ),
                             ),
+
                             const SizedBox(height: 24),
+
                             ElevatedButton(
+                              onPressed:
+                                  _isLoading ? null : () => _submitForm(context),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: theme.colorScheme.primary,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(vertical: 16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              onPressed:
-                                  _isLoading ? null : () => _submitForm(context),
                               child: const Text(
                                 "Kirim",
                                 style: TextStyle(
@@ -232,6 +297,7 @@ class _LayananKonsultasiFormPageState
                                 ),
                               ),
                             ),
+
                             const SizedBox(height: 16),
                           ],
                         ),
@@ -240,7 +306,7 @@ class _LayananKonsultasiFormPageState
                   ),
                 ),
 
-                // 🌟 Overlay Lottie loading
+                /// Lottie Loading
                 if (_isLoading)
                   Container(
                     color: Colors.black45,
@@ -266,12 +332,13 @@ class _LayananKonsultasiFormPageState
 
   @override
   void dispose() {
+    debugPrint("[DISPOSE] Membersihkan controller...");
     _nameController.dispose();
     _whatsappController.dispose();
-    _alamatController.dispose(); // ✅ dispose tambahan
+    _alamatController.dispose();
     _emailController.dispose();
     _perihalController.dispose();
-    _isiController.dispose();
+    _asalInstansiController.dispose();
     _tanggalController.dispose();
     super.dispose();
   }

@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' as Path;
-import 'package:gaspul/core/theme/theme.dart';
 import 'package:gaspul/core/widgets/pdf_popup.dart';
 import 'api_config.dart';
 
@@ -13,10 +12,10 @@ class LayananKonsultasiService {
     required BuildContext context,
     required TextEditingController nameController,
     required TextEditingController whatsappController,
-    required TextEditingController alamatController, // ✅ Tambahan
+    required TextEditingController alamatController,
     required TextEditingController emailController,
     required TextEditingController perihalController,
-    required TextEditingController isiController,
+    required TextEditingController asalInstansiController, // ✅ baru
     required TextEditingController tanggalController,
     File? selectedFile,
   }) async {
@@ -25,10 +24,10 @@ class LayananKonsultasiService {
       final formData = FormData.fromMap({
         'nama_lengkap': nameController.text.trim(),
         'no_hp_wa': whatsappController.text.trim(),
-        'alamat': alamatController.text.trim(), // ✅ dikirim ke server
+        'alamat': alamatController.text.trim(),
         'email': emailController.text.trim(),
         'perihal': perihalController.text.trim(),
-        'isi_konsultasi': isiController.text.trim(),
+        'asal_instansi': asalInstansiController.text.trim(), // ✅ baru
         'tanggal_layanan': tanggalController.text.trim(),
         if (selectedFile != null)
           'dokumen': await MultipartFile.fromFile(
@@ -54,13 +53,12 @@ class LayananKonsultasiService {
         _clearFields(
           nameController,
           whatsappController,
-          alamatController, // ✅ reset alamat juga
+          alamatController,
           emailController,
           perihalController,
-          isiController,
+          asalInstansiController, // ✅ reset instansi
         );
 
-        // ✅ Ambil data PDF & nomor dari respons
         final data = response.data['data'] ?? response.data;
 
         final pdfUrl = data['pdf_url'] ?? data['pdf'] ?? '';
@@ -84,7 +82,6 @@ class LayananKonsultasiService {
           );
         }
       } else {
-        // 🔹 Tangani respons gagal
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Gagal mengirim form: ${response.statusMessage}"),
@@ -93,7 +90,6 @@ class LayananKonsultasiService {
         );
       }
     } catch (e) {
-      // 🔹 Tangani error Dio / koneksi
       debugPrint("Dio error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -104,20 +100,20 @@ class LayananKonsultasiService {
     }
   }
 
-  // 🔹 Fungsi helper untuk reset form setelah sukses
+  // 🔹 Reset field setelah submit sukses
   void _clearFields(
     TextEditingController nameController,
     TextEditingController whatsappController,
-    TextEditingController alamatController, // ✅ tambahan
+    TextEditingController alamatController,
     TextEditingController emailController,
     TextEditingController perihalController,
-    TextEditingController isiController,
+    TextEditingController asalInstansiController,
   ) {
     nameController.clear();
     whatsappController.clear();
-    alamatController.clear(); // ✅ reset alamat juga
+    alamatController.clear();
     emailController.clear();
     perihalController.clear();
-    isiController.clear();
+    asalInstansiController.clear();
   }
 }
