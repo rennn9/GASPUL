@@ -6,20 +6,20 @@ import 'survey_models.dart';
 
 class QuestionStep extends StatefulWidget {
   final int currentQuestion;
-  final List<SurveyQuestion> questions;
   final void Function(dynamic answer) nextQuestion;
   final VoidCallback previousQuestion;
   final Map<int, TextEditingController> questionControllers;
   final Map<String, dynamic> respondentData;
+  final SurveyTemplate? surveyTemplate;
 
   const QuestionStep({
     super.key,
     required this.currentQuestion,
-    required this.questions,
     required this.nextQuestion,
     required this.previousQuestion,
     required this.questionControllers,
     required this.respondentData,
+    this.surveyTemplate,
   });
 
   @override
@@ -28,42 +28,6 @@ class QuestionStep extends StatefulWidget {
 
 class _QuestionStepState extends State<QuestionStep> {
   int current = 0;
-
-  // 🧭 Pemetaan nilai skala untuk semua opsi umum
-  final Map<String, int> skalaNilai = {
-    'Sangat sesuai': 4,
-    'Sesuai': 3,
-    'Kurang sesuai': 2,
-    'Tidak sesuai': 1,
-    'Sangat mudah': 4,
-    'Mudah': 3,
-    'Kurang mudah': 2,
-    'Tidak mudah': 1,
-    'Sangat cepat': 4,
-    'Cepat': 3,
-    'Kurang cepat': 2,
-    'Tidak cepat': 1,
-    'Gratis': 4,
-    'Murah': 3,
-    'Cukup mahal': 2,
-    'Mahal': 1,
-    'Sangat kompeten': 4,
-    'Kompeten': 3,
-    'Kurang kompeten': 2,
-    'Tidak kompeten': 1,
-    'Sangat sopan dan ramah': 4,
-    'Sopan dan ramah': 3,
-    'Kurang sopan': 2,
-    'Tidak sopan': 1,
-    'Sangat Baik': 4,
-    'Baik': 3,
-    'Cukup': 2,
-    'Kurang': 1,
-    'Dikelola dengan baik': 4,
-    'Cukup baik': 3,
-    'Kurang baik': 2,
-    'Tidak baik': 1,
-  };
 
   @override
   void initState() {
@@ -180,6 +144,7 @@ class _QuestionStepState extends State<QuestionStep> {
 
     if (widget.respondentData['id'] == null) {
       debugPrint("⛔ Gagal submit: respondentData['id'] null");
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Harap pilih nomor antrian terlebih dahulu"),
@@ -189,26 +154,74 @@ class _QuestionStepState extends State<QuestionStep> {
       return;
     }
 
-    // 🧩 Gabungkan jawaban + nilai skala
-    final Map<String, dynamic> jawabanDenganSkala = {};
-
-    for (var i = 0; i < widget.questions.length; i++) {
-      final pertanyaan = widget.questions[i].label;
-      final jawaban = widget.questionControllers[i]?.text ?? "";
-      final nilai = skalaNilai[jawaban] ?? 0;
-
-      jawabanDenganSkala[pertanyaan] = {
-        'jawaban': jawaban,
-        'nilai': nilai,
-      };
-
-      debugPrint("📝 Q${i + 1}: $pertanyaan = '$jawaban' (nilai: $nilai)");
+    if (widget.surveyTemplate == null) {
+      debugPrint("⛔ Template survey tidak tersedia");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Template survey tidak tersedia"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
     }
 
-    final saran = widget.questionControllers[widget.questions.length - 1]?.text ?? "";
+    // NEW FORMAT: Using dynamic template
+    debugPrint("🆕 Using NEW format with template: ${widget.surveyTemplate!.nama}");
+
+    final responses = <Map<String, dynamic>>[];
+    final templateQuestionsCount = widget.surveyTemplate!.questions.length;
+
+    // Process template questions (tidak termasuk saran)
+    for (var i = 0; i < templateQuestionsCount; i++) {
+      final question = widget.surveyTemplate!.questions[i];
+      final answer = widget.questionControllers[i]?.text ?? "";
+
+      // Jika pertanyaan adalah text input
+      if (question.isTextInput) {
+        if (answer.isNotEmpty || question.isRequired) {
+          responses.add({
+            'question_id': question.id,
+            'text_answer': answer,
+          });
+          debugPrint("📝 Q${i + 1} [${question.kodeUnsur}]: ${question.pertanyaan} = '$answer' (text input)");
+        }
+        continue;
+      }
+
+      // Skip if empty and not required
+      if (answer.isEmpty && !question.isRequired) {
+        continue;
+      }
+
+      // Find the selected option
+      SurveyQuestionOption? selectedOption;
+      for (var option in question.options) {
+        if (option.jawabanText == answer) {
+          selectedOption = option;
+          break;
+        }
+      }
+
+      if (selectedOption != null) {
+        responses.add({
+          'question_id': question.id,
+          'option_id': selectedOption.id,
+          'text_answer': selectedOption.jawabanText,
+          'poin': selectedOption.poin,
+        });
+        debugPrint("📝 Q${i + 1} [${question.kodeUnsur}]: ${question.pertanyaan} = '${answer}' (poin: ${selectedOption.poin})");
+      }
+    }
+
+    // Get saran from the programmatic final question (index = templateQuestionsCount)
+    final saran = widget.questionControllers[templateQuestionsCount]?.text ?? "";
+    debugPrint("💬 Saran (pertanyaan terakhir): $saran");
+
     final surveyData = {
       ...widget.respondentData,
-      'jawaban': jawabanDenganSkala,
+      'survey_template_id': widget.surveyTemplate!.id,
+      'responses': responses,
       'saran': saran,
     };
 
@@ -219,6 +232,8 @@ class _QuestionStepState extends State<QuestionStep> {
       debugPrint("🚀 Mengirim data ke SurveyService...");
       final res = await SurveyService.submitSurvey(surveyData);
       debugPrint("📨 Respon backend: ${jsonEncode(res)}");
+
+      if (!mounted) return;
 
       if (res['success'] == true) {
         debugPrint("✅ SurveyService response success: ${res.toString()}");
@@ -243,6 +258,7 @@ class _QuestionStepState extends State<QuestionStep> {
       }
     } catch (e) {
       debugPrint("💥 Exception saat submit: $e");
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Terjadi kesalahan saat submit: $e"),
@@ -254,11 +270,40 @@ class _QuestionStepState extends State<QuestionStep> {
 
   @override
   Widget build(BuildContext context) {
-    final question = widget.questions[current];
-    final progress = (current + 1) / widget.questions.length;
+    if (widget.surveyTemplate == null) {
+      return const Center(
+        child: Text("Template survey tidak tersedia"),
+      );
+    }
+
+    // Total questions = questions dari template + 1 (untuk saran)
+    final templateQuestionsCount = widget.surveyTemplate!.questions.length;
+    final totalQuestions = templateQuestionsCount + 1;
+
+    // Tentukan apakah ini pertanyaan dari template atau saran
+    final isSaranQuestion = current >= templateQuestionsCount;
+
+    String questionText;
+    List<String> questionOptions;
+    bool isTextInput;
+
+    if (isSaranQuestion) {
+      // Pertanyaan saran (selalu ada di akhir)
+      questionText = "Kritik / Saran";
+      questionOptions = [];
+      isTextInput = true;
+    } else {
+      // Pertanyaan dari template
+      final templateQuestion = widget.surveyTemplate!.questions[current];
+      questionText = templateQuestion.pertanyaan;
+      questionOptions = templateQuestion.options.map((o) => o.jawabanText).toList();
+      isTextInput = templateQuestion.isTextInput;
+    }
+
+    final progress = (current + 1) / totalQuestions;
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
 
-    debugPrint("📊 Build UI untuk pertanyaan ke-${current + 1} / ${widget.questions.length}");
+    debugPrint("📊 Build UI untuk pertanyaan ke-${current + 1} / $totalQuestions ${isSaranQuestion ? '(Saran)' : ''}");
 
     return Center(
       child: SingleChildScrollView(
@@ -280,7 +325,7 @@ class _QuestionStepState extends State<QuestionStep> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Pertanyaan ${current + 1} dari ${widget.questions.length}",
+                    "Pertanyaan ${current + 1} dari $totalQuestions",
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -289,14 +334,14 @@ class _QuestionStepState extends State<QuestionStep> {
 
             const SizedBox(height: 12),
             Text(
-              question.label,
+              questionText,
               style: const TextStyle(fontSize: 25),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
 
             // ===== Opsi Jawaban =====
-            if (question.options.isEmpty)
+            if (isTextInput)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
@@ -312,7 +357,7 @@ class _QuestionStepState extends State<QuestionStep> {
                       onChanged: (val) => debugPrint("⌨️ Input jawaban teks: '$val'"),
                     ),
                     const SizedBox(height: 16),
-                    if (current == widget.questions.length - 1)
+                    if (current == totalQuestions - 1)
                       ElevatedButton.icon(
                         onPressed: () async {
                           debugPrint("📮 Tombol Kirim ditekan");
@@ -331,17 +376,17 @@ class _QuestionStepState extends State<QuestionStep> {
                 ),
               ),
 
-            if (question.options.isNotEmpty)
+            if (!isTextInput)
               (isLandscape
                   ? Wrap(
                       alignment: WrapAlignment.center,
                       spacing: 10,
                       runSpacing: 10,
-                      children: _buildOptionButtons(question),
+                      children: _buildOptionButtons(questionOptions, totalQuestions),
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: _buildOptionButtons(question),
+                      children: _buildOptionButtons(questionOptions, totalQuestions),
                     )),
 
             const SizedBox(height: 24),
@@ -352,9 +397,9 @@ class _QuestionStepState extends State<QuestionStep> {
     );
   }
 
-  List<Widget> _buildOptionButtons(SurveyQuestion question) {
-    return List.generate(question.options.length, (index) {
-      final option = question.options[index];
+  List<Widget> _buildOptionButtons(List<String> options, int totalQuestions) {
+    return List.generate(options.length, (index) {
+      final option = options[index];
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: OutlinedButton(
@@ -368,7 +413,7 @@ class _QuestionStepState extends State<QuestionStep> {
             debugPrint("🖱️ Opsi '$option' dipilih pada pertanyaan ${current + 1}");
             widget.questionControllers[current] ??= TextEditingController();
             widget.questionControllers[current]!.text = option;
-            if (current < widget.questions.length - 1) {
+            if (current < totalQuestions - 1) {
               setState(() => current += 1);
             } else {
               debugPrint("🏁 Pertanyaan terakhir, memanggil submitSurvey()");

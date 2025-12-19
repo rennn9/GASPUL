@@ -3,6 +3,7 @@ import 'widgets/survey/respondent_form.dart';
 import 'widgets/survey/question_step.dart';
 import 'widgets/survey/survey_models.dart';
 import 'package:gaspul/features/home/widgets/main_app_bar.dart';
+import 'package:gaspul/core/services/survey_service.dart';
 
 class SurveyPage extends StatefulWidget {
   const SurveyPage({super.key});
@@ -28,49 +29,52 @@ class _SurveyPageState extends State<SurveyPage> {
   String? pendidikan;
   String? pekerjaanSelected;
 
-  final List<SurveyQuestion> questions = [
-    SurveyQuestion(
-      label: "Bagaimana pendapat Saudara tentang kesesuaian persyaratan pelayanan dengan jenis pelayanannya?",
-      options: ["Tidak sesuai","Kurang sesuai","Sesuai","Sangat sesuai"],
-    ),
-    SurveyQuestion(
-      label: "Bagaimana pemahaman Saudara tentang kemudahan prosedur pelayanan di unit ini?",
-      options: ["Tidak mudah","Kurang mudah","Mudah","Sangat mudah"],
-    ),
-    SurveyQuestion(
-      label: "Bagaimana pendapat Saudara tentang kecepatan waktu dalam memberikan pelayanan?",
-      options: ["Tidak cepat","Kurang cepat","Cepat","Sangat cepat"],
-    ),
-    SurveyQuestion(
-      label: "Bagaimana pendapat Saudara tentang kewajaran biaya/tarif dalam pelayanan?",
-      options: ["Sangat mahal","Cukup mahal","Murah","Gratis"],
-    ),
-    SurveyQuestion(
-      label: "Bagaimana pendapat Saudara tentang kesesuaian produk pelayanan antara yang tercantum dalam standar pelayanan dengan hasil yang diberikan?",
-      options: ["Tidak sesuai","Kurang sesuai","Sesuai","Sangat sesuai"],
-    ),
-    SurveyQuestion(
-      label: "Bagaimana pendapat Saudara tentang kompetensi/kemampuan petugas dalam pelayanan?",
-      options: ["Tidak kompeten","Kurang kompeten","Kompeten","Sangat kompeten"],
-    ),
-    SurveyQuestion(
-      label: "Bagaimana pendapat Saudara tentang perilaku petugas dalam pelayanan terkait kesopanan dan keramahan?",
-      options: ["Tidak sopan dan ramah","Kurang sopan dan ramah","Sopan dan ramah","Sangat sopan dan ramah"],
-    ),
-    SurveyQuestion(
-      label: "Bagaimana pendapat Saudara tentang kualitas sarana dan prasarana?",
-      options: ["Buruk","Cukup","Baik","Sangat Baik"],
-    ),
-    SurveyQuestion(
-      label: "Bagaimana pendapat Saudara tentang penanganan pengaduan pengguna layanan?",
-      options: ["Tidak ada","Ada tetapi tidak berfungsi","Berfungsi kurang maksimal","Dikelola dengan baik"],
-    ),
-    SurveyQuestion(label: "Kritik / Saran (isian bebas)", options: []),
-  ];
+  // Dynamic template data
+  SurveyTemplate? surveyTemplate;
+  bool isLoadingTemplate = true;
+  String? templateError;
 
   final Map<int, TextEditingController> questionControllers = {};
   final Map<String, dynamic> respondentData = {};
   int step = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSurveyTemplate();
+  }
+
+  Future<void> _loadSurveyTemplate() async {
+    setState(() {
+      isLoadingTemplate = true;
+      templateError = null;
+    });
+
+    try {
+      final templateData = await SurveyService.fetchActiveTemplate();
+
+      if (templateData != null) {
+        setState(() {
+          surveyTemplate = SurveyTemplate.fromJson(templateData);
+          isLoadingTemplate = false;
+        });
+        debugPrint("✅ Survey template loaded: ${surveyTemplate!.nama} v${surveyTemplate!.versi}");
+        debugPrint("📋 Total questions: ${surveyTemplate!.questions.length}");
+      } else {
+        setState(() {
+          isLoadingTemplate = false;
+          templateError = "Template tidak ditemukan, menggunakan format lama";
+        });
+        debugPrint("⚠️ No active template found, using legacy format");
+      }
+    } catch (e) {
+      setState(() {
+        isLoadingTemplate = false;
+        templateError = "Gagal memuat template: $e";
+      });
+      debugPrint("❌ Error loading template: $e");
+    }
+  }
 
   void _startSurvey() {
     if (respondentData['id'] == null || respondentData['nomor_antrian'] == null) {
@@ -121,30 +125,83 @@ final payload = {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MainAppBar(title: "Survey Pelayanan"), // ✅ pakai MainAppBar
+      appBar: const MainAppBar(title: "Survey Pelayanan"),
       body: SafeArea(
-        child: step == 0
-            ? RespondentForm(
-                formKey: _formKey,
-                controllers: controllers,
-                jenisKelamin: jenisKelamin,
-                pendidikan: pendidikan,
-                pekerjaanSelected: pekerjaanSelected,
-                pekerjaanLainController: pekerjaanLainController,
-                onJenisKelaminChanged: (v) => setState(() => jenisKelamin = v),
-                onPendidikanChanged: (v) => setState(() => pendidikan = v),
-                onPekerjaanChanged: (v) => setState(() => pekerjaanSelected = v),
-                onSubmit: _startSurvey,
-                respondentData: respondentData,
+        child: isLoadingTemplate
+            ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text("Memuat template survey..."),
+                  ],
+                ),
               )
-            : QuestionStep(
-                currentQuestion: 0,
-                questions: questions,
-                nextQuestion: (answer) {},
-                previousQuestion: _backToForm,
-                questionControllers: questionControllers,
-                respondentData: respondentData,
-              ),
+            : surveyTemplate == null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            size: 80,
+                            color: Colors.orange,
+                          ),
+                          const SizedBox(height: 24),
+                          const Text(
+                            "Template Survey Tidak Tersedia",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            templateError ?? "Tidak ada template survey yang aktif. Silakan hubungi administrator.",
+                            style: const TextStyle(fontSize: 16),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 32),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              _loadSurveyTemplate();
+                            },
+                            icon: const Icon(Icons.refresh),
+                            label: const Text("Coba Lagi"),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : step == 0
+                    ? RespondentForm(
+                        formKey: _formKey,
+                        controllers: controllers,
+                        jenisKelamin: jenisKelamin,
+                        pendidikan: pendidikan,
+                        pekerjaanSelected: pekerjaanSelected,
+                        pekerjaanLainController: pekerjaanLainController,
+                        onJenisKelaminChanged: (v) => setState(() => jenisKelamin = v),
+                        onPendidikanChanged: (v) => setState(() => pendidikan = v),
+                        onPekerjaanChanged: (v) => setState(() => pekerjaanSelected = v),
+                        onSubmit: _startSurvey,
+                        respondentData: respondentData,
+                      )
+                    : QuestionStep(
+                        currentQuestion: 0,
+                        nextQuestion: (answer) {},
+                        previousQuestion: _backToForm,
+                        questionControllers: questionControllers,
+                        respondentData: respondentData,
+                        surveyTemplate: surveyTemplate,
+                      ),
       ),
     );
   }

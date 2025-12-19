@@ -18,6 +18,61 @@ class SurveyService {
     }
   }
 
+  /// Fetch active survey template with questions and options
+  static Future<Map<String, dynamic>?> fetchActiveTemplate() async {
+    final url = Uri.parse('${ApiConfig.baseUrl}/survey-templates/active');
+    try {
+      print('🌐 Fetching active template from: $url');
+      final response = await http.get(url, headers: {'Accept': 'application/json'});
+      print('📡 Response status: ${response.statusCode}');
+      print('📦 Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('✅ Template data parsed: ${data['data'] != null ? "Found" : "Null"}');
+        return data['data'];
+      } else {
+        print('❌ Failed with status ${response.statusCode}: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('💥 Exception in fetchActiveTemplate: $e');
+      return null;
+    }
+  }
+
+  /// Fetch all survey templates
+  static Future<List<Map<String, dynamic>>> fetchAllTemplates() async {
+    final url = Uri.parse('${ApiConfig.baseUrl}/survey-templates');
+    try {
+      final response = await http.get(url, headers: {'Accept': 'application/json'});
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return List<Map<String, dynamic>>.from(data['data'] ?? []);
+      } else {
+        return [];
+      }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Fetch specific template with questions and options
+  static Future<Map<String, dynamic>?> fetchTemplateById(int templateId) async {
+    final url = Uri.parse('${ApiConfig.baseUrl}/survey-templates/$templateId');
+    try {
+      final response = await http.get(url, headers: {'Accept': 'application/json'});
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'];
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
   static Future<Map<String, dynamic>> submitSurvey(Map<String, dynamic> surveyData) async {
     final url = Uri.parse('${ApiConfig.baseUrl}/survey');
     try {

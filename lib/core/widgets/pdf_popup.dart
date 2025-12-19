@@ -50,6 +50,8 @@ class _PdfPopupState extends State<PdfPopup> {
   bool loading = true;
   String? errorMessage;
   PdfController? pdfController;
+  int currentAttempt = 0;
+  int maxRetries = 3;
 
   @override
   void initState() {
@@ -59,6 +61,7 @@ class _PdfPopupState extends State<PdfPopup> {
 
   Future<void> loadPdf() async {
     if (widget.pdfUrl.isEmpty) {
+      if (!mounted) return;
       setState(() {
         loading = false;
         errorMessage = 'URL PDF tidak tersedia';
@@ -66,21 +69,104 @@ class _PdfPopupState extends State<PdfPopup> {
       return;
     }
 
-    try {
-      final response = await http.get(Uri.parse(widget.pdfUrl));
-      if (response.statusCode == 200) {
-        pdfData = response.bodyBytes;
-        pdfController = PdfController(document: PdfDocument.openData(pdfData!));
-        setState(() => loading = false);
-      } else {
-        throw Exception('HTTP ${response.statusCode}');
+    // Reset state
+    if (!mounted) return;
+    setState(() {
+      loading = true;
+      errorMessage = null;
+      currentAttempt = 0;
+    });
+
+    while (currentAttempt < maxRetries) {
+      currentAttempt++;
+      if (!mounted) return;
+      setState(() {}); // Update UI with new attempt number
+
+      debugPrint('📥 Attempt $currentAttempt/$maxRetries - Downloading PDF: ${widget.pdfUrl}');
+
+      try {
+        // Use persistent connection with custom headers
+        final client = http.Client();
+        try {
+          final request = http.Request('GET', Uri.parse(widget.pdfUrl));
+          request.headers['Connection'] = 'keep-alive';
+          request.headers['Accept'] = 'application/pdf,*/*';
+
+          final streamedResponse = await client.send(request).timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw Exception('⏱️ Request timeout (30 detik) - Server tidak merespons');
+            },
+          );
+
+          if (streamedResponse.statusCode == 200) {
+            // Read response in chunks to handle connection properly
+            final bytes = await streamedResponse.stream.toBytes();
+            debugPrint('✅ PDF downloaded successfully (${bytes.length} bytes)');
+
+            if (!mounted) return;
+            setState(() {
+              pdfData = bytes;
+              pdfController = PdfController(document: PdfDocument.openData(pdfData!));
+              loading = false;
+            });
+            return; // Success, exit function
+          } else {
+            throw Exception('HTTP ${streamedResponse.statusCode}: ${streamedResponse.reasonPhrase}');
+          }
+        } finally {
+          client.close();
+        }
+      } catch (e) {
+        debugPrint('❌ Attempt $currentAttempt failed: $e');
+
+        if (currentAttempt >= maxRetries) {
+          // Final attempt failed
+          if (!mounted) return;
+          setState(() {
+            loading = false;
+            errorMessage = _buildErrorMessage(e, currentAttempt);
+          });
+          return;
+        }
+
+        // Wait before retry (exponential backoff: 1s, 2s, 4s)
+        final delaySeconds = currentAttempt * currentAttempt;
+        debugPrint('⏳ Waiting ${delaySeconds}s before retry...');
+        await Future.delayed(Duration(seconds: delaySeconds));
       }
-    } catch (e) {
-      setState(() {
-        loading = false;
-        errorMessage = e.toString();
-      });
     }
+  }
+
+  String _buildErrorMessage(dynamic error, int attempts) {
+    String message = error.toString();
+
+    if (message.contains('SocketException') || message.contains('Connection closed')) {
+      return 'Koneksi terputus saat mengunduh PDF.\n\n'
+          'Kemungkinan penyebab:\n'
+          '• Koneksi internet tidak stabil\n'
+          '• Server sedang sibuk\n'
+          '• File PDF terlalu besar\n\n'
+          'Sudah dicoba $attempts kali.\n\n'
+          'Solusi: Cek koneksi internet Anda atau coba beberapa saat lagi.';
+    } else if (message.contains('timeout')) {
+      return 'Waktu tunggu habis (timeout).\n\n'
+          'Server membutuhkan waktu lebih dari 30 detik.\n'
+          'Sudah dicoba $attempts kali.\n\n'
+          'Solusi: Coba lagi nanti atau hubungi administrator.';
+    } else if (message.contains('HTTP 404')) {
+      return 'File PDF tidak ditemukan di server (404).\n\n'
+          'URL: ${widget.pdfUrl}\n\n'
+          'Hubungi administrator untuk melaporkan masalah ini.';
+    } else if (message.contains('HTTP 500')) {
+      return 'Server mengalami error (500).\n\n'
+          'Terjadi kesalahan di sisi server saat membuat PDF.\n\n'
+          'Hubungi administrator untuk melaporkan masalah ini.';
+    }
+
+    return 'Gagal memuat PDF setelah $attempts percobaan.\n\n'
+        'Error: $message\n\n'
+        'Hubungi administrator jika masalah berlanjut.';
   }
 
   Future<void> _printPdf(BuildContext dialogContext) async {
@@ -108,9 +194,11 @@ class _PdfPopupState extends State<PdfPopup> {
         onLayout: (_) => pdfData!,
       );
     } catch (e) {
-      ScaffoldMessenger.of(
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(
         Navigator.of(dialogContext, rootNavigator: true).context,
-      ).showSnackBar(
+      );
+      messenger.showSnackBar(
         SnackBar(content: Text('❌ Gagal print PDF: $e')),
       );
     }
@@ -133,7 +221,7 @@ class _PdfPopupState extends State<PdfPopup> {
             horizontal: screen.width * 0.03,
           ),
           child: loading
-              ? const CircularProgressIndicator()
+              ? _buildLoadingIndicator()
               : pdfData == null
                   ? _errorBox()
                   : FutureBuilder<PdfPageImage?>(
@@ -278,13 +366,116 @@ class _PdfPopupState extends State<PdfPopup> {
     return image;
   }
 
-  Widget _errorBox() => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Text(
-            'PDF gagal dimuat.\n$errorMessage',
-            textAlign: TextAlign.center,
+  Widget _buildLoadingIndicator() {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 24),
+          Text(
+            'Mengunduh PDF...',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      );
+          const SizedBox(height: 12),
+          Text(
+            'Percobaan $currentAttempt dari $maxRetries',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Mohon tunggu hingga 30 detik...',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[500],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _errorBox() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.error_outline,
+            color: Colors.red,
+            size: 64,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'PDF Gagal Dimuat',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.red[200]!),
+            ),
+            child: Text(
+              errorMessage ?? 'Terjadi kesalahan tidak diketahui',
+              textAlign: TextAlign.left,
+              style: const TextStyle(fontSize: 13),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  loadPdf(); // Retry
+                },
+                icon: const Icon(Icons.refresh, size: 18),
+                label: const Text('Coba Lagi'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+              OutlinedButton.icon(
+                onPressed: () {
+                  if (mounted) Navigator.pop(context);
+                },
+                icon: const Icon(Icons.close, size: 18),
+                label: const Text('Tutup'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
